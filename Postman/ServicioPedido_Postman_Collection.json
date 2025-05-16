@@ -1,0 +1,93 @@
+{
+  "info": {
+    "name": "ServicioPedido",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET - Listar pedidos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST - Crear pedido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerName\": \"Juan P\\u00e9rez\",\n  \"products\": [\n    {\n      \"productId\": \"123abc\",\n      \"quantity\": 2\n    },\n    {\n      \"productId\": \"456def\",\n      \"quantity\": 1\n    }\n  ],\n  \"total\": 1399.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3001/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET - Obtener pedido por ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3001/api/orders/:id",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "orders",
+            ":id"
+          ]
+        }
+      }
+    },
+    {
+      "name": "DELETE - Eliminar pedido",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "http://localhost:3001/api/orders/:id",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "orders",
+            ":id"
+          ]
+        }
+      }
+    }
+  ]
+}

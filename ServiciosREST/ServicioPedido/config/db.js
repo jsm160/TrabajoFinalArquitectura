@@ -1,0 +1,1 @@
+// Configuración adicional si se desea separar conexión
