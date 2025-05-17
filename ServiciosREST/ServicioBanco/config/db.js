@@ -1,0 +1,1 @@
+// No se usa en este servicio, simula la validación bancaria.

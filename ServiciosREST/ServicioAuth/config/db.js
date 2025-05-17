@@ -1,0 +1,1 @@
+// Aquí puedes configurar la conexión con mongoose si lo deseas separar

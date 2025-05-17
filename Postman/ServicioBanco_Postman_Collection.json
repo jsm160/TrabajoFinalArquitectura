@@ -1,0 +1,36 @@
+{
+  "info": {
+    "name": "ServicioBanco",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST - Validar pago",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"1234567812345678\",\n  \"cardHolder\": \"Juan P\\u00e9rez\",\n  \"amount\": 199.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3002/api/payments",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "api",
+            "payments"
+          ]
+        }
+      }
+    }
+  ]
+}
