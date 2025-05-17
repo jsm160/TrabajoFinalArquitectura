@@ -1,0 +1,41 @@
+
+#%RAML 1.0
+title: Servicio de Autenticación
+version: v1
+baseUri: /auth
+
+types:
+  User:
+    type: object
+    properties:
+      username: string
+      password: string
+    example:
+      username: "usuario123"
+      password: "secreta123"
+
+/auth/register:
+  post:
+    description: Registrar un nuevo usuario
+    body:
+      application/json:
+        type: User
+    responses:
+      201:
+        description: Usuario creado correctamente
+        body:
+          application/json:
+            example: { message: "Usuario registrado con éxito" }
+
+/auth/login:
+  post:
+    description: Iniciar sesión de usuario
+    body:
+      application/json:
+        type: User
+    responses:
+      200:
+        description: Autenticación correcta
+        body:
+          application/json:
+            example: { token: "abc.def.ghi" }

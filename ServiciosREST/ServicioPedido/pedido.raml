@@ -1,0 +1,66 @@
+
+#%RAML 1.0
+title: Servicio de Pedidos
+version: v1
+baseUri: /pedido
+
+types:
+  OrderItem:
+    type: object
+    properties:
+      productId: string
+      quantity: number
+    example:
+      productId: "abc123"
+      quantity: 2
+
+  Order:
+    type: object
+    properties:
+      customerName: string
+      products: OrderItem[]
+      total: number
+      status: string
+      createdAt: datetime
+    example:
+      customerName: "Carlos Pérez"
+      products: [
+        { productId: "p1", quantity: 1 },
+        { productId: "p2", quantity: 2 }
+      ]
+      total: 149.98
+      status: "pendiente"
+      createdAt: "2024-04-01T10:00:00Z"
+
+/pedidos:
+  get:
+    description: Obtener todos los pedidos
+    responses:
+      200:
+        body:
+          application/json:
+            type: Order[]
+            example: [
+              {
+                customerName: "Carlos Pérez",
+                products: [
+                  { productId: "p1", quantity: 1 },
+                  { productId: "p2", quantity: 2 }
+                ],
+                total: 149.98,
+                status: "pendiente",
+                createdAt: "2024-04-01T10:00:00Z"
+              }
+            ]
+
+  post:
+    description: Crear un nuevo pedido
+    body:
+      application/json:
+        type: Order
+    responses:
+      201:
+        description: Pedido creado correctamente
+        body:
+          application/json:
+            example: { message: "Pedido creado", orderId: "abc123" }
