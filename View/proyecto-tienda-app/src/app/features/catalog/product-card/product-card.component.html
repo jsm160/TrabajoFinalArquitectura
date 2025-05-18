@@ -1,1 +1,20 @@
-<p>product-card works!</p>
+<div class="product-card" *ngIf="product">
+    <a [routerLink]="['/catalog', product.id]" class="product-image-link">
+      <img [src]="product.imageUrl || 'assets/images/placeholder.png'" [alt]="product.name" class="product-image">
+    </a>
+    <div class="product-info">
+      <h3 class="product-name">
+        <a [routerLink]="['/catalog', product.id]">{{ product.name }}</a>
+      </h3>
+      <p class="product-description">{{ product.description | slice:0:70 }}{{ product.description.length > 70 ? '...' : '' }}</p>
+      <div class="product-footer">
+        <span class="product-price">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</span>
+        <button (click)="onAddToCart()" class="add-to-cart-btn" [disabled]="!product.stock || product.stock <= 0">
+          {{ product.stock && product.stock > 0 ? 'Añadir al Carrito' : 'Agotado' }}
+        </button>
+      </div>
+      <p *ngIf="product.stock && product.stock <= 5 && product.stock > 0" class="low-stock-warning">
+        ¡Pocas unidades! ({{ product.stock }})
+      </p>
+    </div>
+  </div>

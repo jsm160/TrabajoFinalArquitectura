@@ -1,0 +1,220 @@
+/* src/app/features/cart/cart-page.component.css */
+
+.cart-page-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Arial', sans-serif; /* Consistencia con otros componentes */
+  }
+  
+  .cart-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .cart-header h1 {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  .cart-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .cart-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 1rem; /* Espacio entre elementos del item */
+  }
+  
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+  
+  .item-image {
+    flex-shrink: 0;
+  }
+  
+  .product-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #eee;
+  }
+  
+  .item-details {
+    flex-grow: 1;
+  }
+  
+  .item-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #444;
+    margin: 0 0 0.3rem 0;
+  }
+  
+  .item-price-unit {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+  }
+  
+  .item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .item-quantity label {
+    font-size: 0.85rem;
+    color: #555;
+  }
+  
+  .quantity-input {
+    width: 60px;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .quantity-input:focus {
+    outline: none;
+    border-color: #007bff; /* Color de enfoque */
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .item-total {
+    font-weight: 600;
+    color: #333;
+    min-width: 100px; /* Asegura alineación */
+    text-align: right;
+  }
+  
+  .remove-button {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 50%; /* Círculo */
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .remove-button:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .empty-cart-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    margin-top: 1rem;
+  }
+  
+  .empty-cart-message p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  .empty-cart-message a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .empty-cart-message a:hover {
+    text-decoration: underline;
+  }
+  
+  .cart-summary {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #007bff; /* Línea más gruesa para destacar */
+    text-align: right;
+  }
+  
+  .total-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cart-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem; /* Espacio entre botones */
+    align-items: center; /* Alinear con el texto de login si está presente */
+  }
+  
+  .action-button {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none; /* Para el routerLink si se usa como botón */
+    display: inline-block;
+  }
+  
+  .clear-button {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+  }
+  
+  .clear-button:hover {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+  }
+  
+  .checkout-button {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .checkout-button:hover {
+    background-color: #218838;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .login-prompt {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0;
+  }
+  
+  .login-prompt a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .login-prompt a:hover {
+    text-decoration: underline;
+  }

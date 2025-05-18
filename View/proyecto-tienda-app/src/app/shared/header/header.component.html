@@ -1,0 +1,51 @@
+<header class="app-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a routerLink="/" class="logo-link" aria-label="Página de inicio">
+          <img src="assets/images/logo.png" alt="Logo Tienda" class="logo-image" *ngIf="false"> 
+          <span class="logo-text">MiTienda</span>
+        </a>
+      </div>
+  
+      <nav class="main-navigation">
+        <ul>
+          <li>
+            <a
+              routerLink="/catalog"
+              routerLinkActive="active-link"
+              [routerLinkActiveOptions]="{ exact: true }"
+              aria-label="Ver catálogo de productos">
+              Catálogo
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/cart"
+              routerLinkActive="active-link"
+              aria-label="Ver carrito de compras">
+              Carrito
+              <span *ngIf="(cartItemCount$ | async) as count" class="cart-badge" [class.has-items]="count > 0">
+                {{ count > 0 ? count : '' }}
+              </span>
+            </a>
+          </li>
+          <!-- Enlaces condicionales para autenticación -->
+          <!--
+          <li *ngIf="!(isLoggedIn$ | async)">
+            <a routerLink="/login" routerLinkActive="active-link">Login</a>
+          </li>
+          <li *ngIf="(isLoggedIn$ | async)">
+            <a routerLink="/profile" routerLinkActive="active-link">Perfil</a>
+          </li>
+          <li *ngIf="(isLoggedIn$ | async)">
+            <button (click)="logout()" class="logout-button">Logout</button>
+          </li>
+          -->
+        </ul>
+      </nav>
+  
+      <div class="header-actions">
+        <!-- Aquí podrían ir otros iconos o acciones, como búsqueda, selector de idioma, etc. -->
+      </div>
+    </div>
+  </header>

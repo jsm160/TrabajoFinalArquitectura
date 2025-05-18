@@ -1,0 +1,110 @@
+.app-header {
+    background-color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky; /* Para que se quede fijo al hacer scroll */
+    top: 0;
+    z-index: 1000; /* Asegura que esté por encima de otros contenidos */
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .header-container {
+    max-width: 1200px; 
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-container .logo-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-image {
+    height: 40px; /* Ajusta según tu logo */
+    margin-right: 0.5rem;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333; /* Color principal de tu marca */
+  }
+  
+  .main-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1.5rem; /* Espacio entre enlaces */
+  }
+  
+  .main-navigation a,
+  .main-navigation .logout-button {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 0.2rem; /* Padding vertical para una mejor zona de clic */
+    position: relative;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .main-navigation a:hover,
+  .main-navigation .logout-button:hover {
+    color: #007bff; /* Color de hover, tu color primario */
+  }
+  
+  .main-navigation a.active-link {
+    color: #007bff; /* Color del enlace activo */
+    font-weight: 600;
+  }
+  
+  /* Indicador visual para el enlace activo (opcional) */
+  .main-navigation a.active-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; /* Ajusta para que quede justo debajo del texto */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #007bff;
+  }
+  
+  
+  .cart-badge {
+    display: inline-block;
+    background-color: #dc3545; /* Color para el badge del carrito */
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.15em 0.5em;
+    border-radius: 10px; /* Hace el badge un poco ovalado */
+    margin-left: 0.4em;
+    min-width: 18px; /* Para que el círculo se vea bien incluso con 1 dígito */
+    height: 18px;
+    line-height: 14px; /* Centra el texto verticalmente */
+    text-align: center;
+    transition: transform 0.2s ease-out, background-color 0.2s ease;
+    opacity: 0; /* Oculto por defecto */
+    transform: scale(0.8);
+  }
+  
+  .cart-badge.has-items {
+    opacity: 1; /* Visible si hay items */
+    transform: scale(1);
+  }
+  
+  /* Estilo para el botón de logout si decides usarlo */
+  .logout-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 0; /* Alinearlo con los 'a' tags */
+  }
+  
+  .header-actions {
+   
+  }
