@@ -1,27 +1,23 @@
-// src/app/features/cart/cart.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Product } from '../catalog/catalog.interface'; 
-import { CartItem } from './cart.interface'; 
+import { Product } from '../catalog/catalog.interface';
+import { CartItem } from './cart.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
   private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
-  // Observable público para que los componentes se suscriban a los cambios del carrito
   cart$: Observable<CartItem[]> = this.cartItemsSubject.asObservable();
 
   private readonly localStorageKey = 'shoppingCart';
 
   constructor() {
+    localStorage.removeItem(this.localStorageKey);
     this.loadCartFromLocalStorage();
   }
 
-  /**
-   * Carga el carrito desde localStorage al iniciar el servicio.
-   */
   private loadCartFromLocalStorage(): void {
     const storedCart = localStorage.getItem(this.localStorageKey);
     if (storedCart) {
@@ -31,7 +27,7 @@ export class CartService {
         console.log('CartService: Cart loaded from localStorage.', parsedCart);
       } catch (e) {
         console.error('CartService: Error parsing cart from localStorage. Clearing stored cart.', e);
-        localStorage.removeItem(this.localStorageKey); 
+        localStorage.removeItem(this.localStorageKey);
       }
     }
   }

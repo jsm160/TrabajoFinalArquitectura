@@ -1,20 +1,32 @@
-<div class="product-card" *ngIf="product">
-    <a [routerLink]="['/catalog', product.id]" class="product-image-link">
-      <img [src]="product.imageUrl || 'assets/images/placeholder.png'" [alt]="product.name" class="product-image">
-    </a>
-    <div class="product-info">
-      <h3 class="product-name">
-        <a [routerLink]="['/catalog', product.id]">{{ product.name }}</a>
-      </h3>
-      <p class="product-description">{{ product.description | slice:0:70 }}{{ product.description.length > 70 ? '...' : '' }}</p>
-      <div class="product-footer">
-        <span class="product-price">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</span>
-        <button (click)="onAddToCart()" class="add-to-cart-btn" [disabled]="!product.stock || product.stock <= 0">
-          {{ product.stock && product.stock > 0 ? 'Añadir al Carrito' : 'Agotado' }}
-        </button>
-      </div>
-      <p *ngIf="product.stock && product.stock <= 5 && product.stock > 0" class="low-stock-warning">
-        ¡Pocas unidades! ({{ product.stock }})
-      </p>
+<div class="product-card-modern" *ngIf="product">
+  <a [routerLink]="['/catalog', product.id]" class="product-img-link">
+    <img [src]="product.imageUrl || 'assets/images/placeholder.png'" [alt]="product.name" class="product-img">
+  </a>
+
+  <div class="product-body">
+    <h3 class="product-title">
+      <a [routerLink]="['/catalog', product.id]">
+        <i class="fa fa-tag"></i> {{ product.name }}
+      </a>
+    </h3>
+
+    <p class="product-desc">
+      {{ product.description | slice:0:80 }}{{ product.description.length > 80 ? '...' : '' }}
+    </p>
+
+    <div class="product-meta">
+      <span class="product-price">
+        <i class="fa fa-dollar-sign"></i> {{ product.price | currency:'USD' }}
+      </span>
+
+      <button (click)="onAddToCart()" [disabled]="!hasStock()" class="btn-cart">
+        <i class="fa" [ngClass]="hasStock() ? 'fa-cart-plus' : 'fa-ban'"></i>
+        {{ hasStock() ? 'Añadir' : 'Agotado' }}
+      </button>
     </div>
+
+    <p *ngIf="isLowStock()" class="stock-warning">
+      <i class="fa fa-exclamation-circle"></i> ¡Quedan {{ product.stock }}!
+    </p>
   </div>
+</div>

@@ -1,0 +1,15 @@
+<h2>Pedidos realizados</h2>
+
+<div *ngFor="let pedido of pedidos" class="pedido-card">
+  <h3>Cliente: {{ pedido.userEmail }}</h3>
+  <p>Total: {{ pedido.totalPrice | currency:'EUR' }}</p>
+  <p>Estado: {{ pedido.status }}</p>
+
+  <ul>
+    <li *ngFor="let item of pedido.items">
+      {{ item.productName }} - {{ item.quantity }} uds - {{ item.total | currency:'EUR' }}
+    </li>
+  </ul>
+
+  <hr>
+</div>

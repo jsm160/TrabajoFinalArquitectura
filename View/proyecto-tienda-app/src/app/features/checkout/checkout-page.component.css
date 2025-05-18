@@ -1,0 +1,49 @@
+.checkout-page-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.checkout-items-list {
+  list-style: none;
+  padding: 0;
+}
+
+.checkout-items-list li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.checkout-summary {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+.checkout-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #eee;
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}
+
+.success-message {
+  color: green;
+  margin-top: 1rem;
+}

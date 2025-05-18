@@ -24,6 +24,10 @@ export const routes: Routes = [
     path: 'payment-result',
     loadChildren: () => import('./features/payment-result/payment-result.routes').then(r => r.PAYMENT_RESULT_ROUTES)
   },
+  {
+    path: 'pedidos',
+    loadComponent: () => import('./features/pedidos/pedido-page.component').then(m => m.PedidoPageComponent)
+  },
   { path: '', redirectTo: 'catalog', pathMatch: 'full' },
-  { path: '**', redirectTo: 'catalog' } 
+  { path: '**', redirectTo: 'catalog' }
 ];

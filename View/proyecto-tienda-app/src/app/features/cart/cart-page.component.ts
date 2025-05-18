@@ -1,11 +1,10 @@
-// src/app/features/cart/cart-page.component.ts
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
-import { CartService } from './cart.service'; // Servicio del carrito
-import { CartItem } from './cart.interface';   // Interfaz del item del carrito
+import { CartService } from './cart.service';
+import { CartItem } from './cart.interface';
 
 @Component({
   selector: 'app-cart-page',
@@ -21,9 +20,8 @@ import { CartItem } from './cart.interface';   // Interfaz del item del carrito
 export class CartPageComponent implements OnInit, OnDestroy {
   cartItems$: Observable<CartItem[]>;
   total$: Observable<number>;
-  isLoggedIn: boolean = false; // Propiedad para rastrear el estado de login
+  isLoggedIn: boolean = false;
 
-  // Usando inject() para los servicios
   private cartService = inject(CartService);
   private router = inject(Router);
 

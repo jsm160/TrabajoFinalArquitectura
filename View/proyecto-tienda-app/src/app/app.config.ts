@@ -1,7 +1,8 @@
 import { ApplicationConfig} from '@angular/core';
 import { provideRouter, withComponentInputBinding, withPreloading, PreloadAllModules } from '@angular/router';
-import { provideHttpClient} from '@angular/common/http';
+import { provideHttpClient, withInterceptors} from '@angular/common/http';
 import { routes } from './app.routes';
+import { tokenInterceptor } from './core/interceptors/token.interceptor';
 
 export const environment = {
   production: false,
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
       withPreloading(PreloadAllModules)
     ),
     provideHttpClient(
+       withInterceptors([tokenInterceptor])
     ),
   ]
 };

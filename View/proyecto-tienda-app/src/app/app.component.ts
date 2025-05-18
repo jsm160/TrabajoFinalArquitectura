@@ -14,4 +14,7 @@ import { HeaderComponent } from './shared/header/header.component';
 })
 export class AppComponent {
   title = 'PROYECTO-TIENDA-APP';
+  constructor() {
+    localStorage.removeItem('authToken');
+  }
 }
