@@ -2,8 +2,8 @@
     <div class="header-container">
       <div class="logo-container">
         <a routerLink="/" class="logo-link" aria-label="Página de inicio">
-          <img src="assets/images/logo.png" alt="Logo Tienda" class="logo-image" *ngIf="false"> 
-          <span class="logo-text">MiTienda</span>
+          <img src="assets/images/logo_placeholder.png" alt="Logo MiTienda" class="logo-image" *ngIf="true">
+          <span class="logo-text" *ngIf="false">MiTienda</span> 
         </a>
       </div>
   
@@ -29,23 +29,35 @@
               </span>
             </a>
           </li>
-          <!-- Enlaces condicionales para autenticación -->
-          <!--
-          <li *ngIf="!(isLoggedIn$ | async)">
-            <a routerLink="/login" routerLinkActive="active-link">Login</a>
-          </li>
-          <li *ngIf="(isLoggedIn$ | async)">
-            <a routerLink="/profile" routerLinkActive="active-link">Perfil</a>
-          </li>
-          <li *ngIf="(isLoggedIn$ | async)">
-            <button (click)="logout()" class="logout-button">Logout</button>
-          </li>
-          -->
+  
+          <!-- Enlaces de Autenticación Dinámicos -->
+          <ng-container *ngIf="(isLoggedIn$ | async); else showLoginLink">
+            <li>
+              <button (click)="logout()" class="nav-link logout-button" aria-label="Cerrar sesión">
+                Cerrar Sesión
+              </button>
+            </li>
+          </ng-container>
+  
+          <ng-template #showLoginLink>
+            <li>
+              <a routerLink="/login" routerLinkActive="active-link" aria-label="Iniciar sesión">
+                Iniciar Sesión
+              </a>
+            </li>
+            <!-- Opcional: Enlace a Registro -->
+            <!--
+            <li>
+              <a routerLink="/register" routerLinkActive="active-link" aria-label="Crear una cuenta">
+                Registrarse
+              </a>
+            </li>
+            -->
+          </ng-template>
         </ul>
       </nav>
   
       <div class="header-actions">
-        <!-- Aquí podrían ir otros iconos o acciones, como búsqueda, selector de idioma, etc. -->
       </div>
     </div>
   </header>

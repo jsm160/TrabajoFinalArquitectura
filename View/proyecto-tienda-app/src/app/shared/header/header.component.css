@@ -105,6 +105,29 @@
     padding: 0.5rem 0; /* Alinearlo con los 'a' tags */
   }
   
-  .header-actions {
-   
+  .main-navigation .logout-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555; /* O el color de tus enlaces de navegación */
+    font-weight: 500;
+    font-size: 1rem; /* Mismo tamaño que los enlaces */
+    padding: 0.5rem 0.2rem; /* Para alinear con los <a> */
+    font-family: inherit; /* Heredar la fuente del tema */
+    line-height: normal; /* Asegurar que no herede algo extraño */
+  }
+  
+  .main-navigation .logout-button:hover {
+    color: #007bff; /* O tu color de hover primario */
+    text-decoration: none; /* O underline si prefieres */
+  }
+  
+  .main-navigation .nav-link { /* Asegúrate que esta clase genérica exista para los 'a' */
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 0.2rem;
+    position: relative;
+    transition: color 0.2s ease-in-out;
   }

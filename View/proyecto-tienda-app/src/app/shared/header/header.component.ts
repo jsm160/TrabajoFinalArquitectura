@@ -1,10 +1,9 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router'; 
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { CartService } from '../../features/cart/cart.service'; 
-// Aqui cuando tengamo s un servicio de autenticación para mostrar "Login" o "Logout"
-// import { AuthService } from '../../core/auth/auth.service';
+import { AuthService } from '../../core/auth/auth.service';   
 
 @Component({
   selector: 'app-header',
@@ -12,31 +11,34 @@ import { CartService } from '../../features/cart/cart.service';
   imports: [
     CommonModule,
     RouterLink,
-    RouterLinkActive //
+    RouterLinkActive
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  // Inyección de servicios
   private cartService = inject(CartService);
-  // private authService = inject(AuthService);
+  private authService = inject(AuthService);
 
   cartItemCount$: Observable<number>;
-  // isLoggedIn$: Observable<boolean>;
+  isLoggedIn$: Observable<boolean>;
 
   private subscriptions = new Subscription();
 
   constructor() {
+    // Inicialización de los observables
     this.cartItemCount$ = this.cartService.getTotalItemCount();
-    // this.isLoggedIn$ = this.authService.isLoggedIn$; 
+    this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
 
   ngOnInit(): void {
-// Método para logout
-  // logout(): void {
-  //   this.authService.logout();
- 
-  // 
+  }
+
+  // Método para realizar el logout
+  logout(): void {
+    this.authService.logout();
+    // El AuthService se encarga de redirigir a /login después del logout.
   }
 
   ngOnDestroy(): void {
