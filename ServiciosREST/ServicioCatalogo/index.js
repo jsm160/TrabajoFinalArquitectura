@@ -6,16 +6,20 @@ require('./config/db');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true 
+}));
 
-const verifyToken = require('./middleware/auth.middleware');
-app.use(verifyToken);
+app.use(express.json());
 
 // Rutas
 const productRoutes = require('./routes/product.routes');
 app.use('/api/products', productRoutes);
 
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🟢 Servicio Catálogo escuchando en el puerto ${PORT}`);
 });

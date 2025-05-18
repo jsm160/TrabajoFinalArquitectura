@@ -1,14 +1,17 @@
 const express = require('express');
 const cors = require('cors');
-
-// Cargar configuración de conexión MongoDB (MongoDB Atlas)
+require('dotenv').config();
 require('./config/db');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// Middlewares
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Rutas
