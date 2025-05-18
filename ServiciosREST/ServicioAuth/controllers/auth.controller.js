@@ -2,28 +2,47 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// Registro
 exports.register = async (req, res) => {
-    const { username, password } = req.body;
+  const { email, password } = req.body;
 
-    const existing = await User.findOne({ username });
-    if (existing) return res.status(409).json({ message: 'Usuario ya existe' });
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(409).json({ message: 'El email ya está registrado' });
 
-    const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashed });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({ email, password: hashedPassword });
     await user.save();
 
     res.status(201).json({ message: 'Usuario registrado correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
 };
 
+// Login
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
+  const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
-    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid)
+      return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-    const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || 'miclaveultrasecreta',
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al iniciar sesión' });
+  }
 };

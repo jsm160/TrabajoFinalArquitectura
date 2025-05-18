@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { mongoURI } = require('../../BBDD_mongo_config/config');
+const { mongoURI } = require('../../../BBDD_mongo_config/config');  // ✅ Correcto
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
