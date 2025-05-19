@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpel:process name="ProyectoBPELPedido"
+         targetNamespace="http://localhost/bpel/ProyectoBPELPedido"
+         suppressJoinFailure="yes"
+         xmlns:tns="http://localhost/bpel/ProyectoBPELPedido"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns="http://control.stock.org"
+         xmlns:prov="http://control.provider.org">
+
+  <bpel:import namespace="http://control.provider.org" location="ProviderServiceHandler.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+  <bpel:import namespace="http://control.stock.org" location="StockServiceHandler.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+  <bpel:import namespace="http://localhost/bpel/ProyectoBPELPedido" location="ProyectoBPELPedidoArtifacts.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+
+  <bpel:partnerLinks>
+    <bpel:partnerLink name="client" partnerLinkType="tns:ProyectoBPELPedido" myRole="ProyectoBPELPedidoProvider"/>
+    <bpel:partnerLink name="StockPartner" partnerLinkType="tns:StockPartnerLinkType" partnerRole="StockServiceHandlerRol"/>
+    <bpel:partnerLink name="ProvidePartner" partnerLinkType="tns:ProvideServiceHandlerLinkType" partnerRole="ProvideServiceHandlerRol"/>
+  </bpel:partnerLinks>
+
+  <bpel:variables>
+    <bpel:variable name="input" messageType="tns:ProyectoBPELPedidoRequestMessage"/>
+    <bpel:variable name="output" messageType="tns:ProyectoBPELPedidoResponseMessage"/>
+    <bpel:variable name="StockPartnerResponse" messageType="ns:verifyAvailabilityResponse"/>
+    <bpel:variable name="StockPartnerRequest" messageType="ns:verifyAvailabilityRequest"/>
+    <bpel:variable name="CheckPriceRequest" messageType="prov:checkProductPriceRequest"/>
+    <bpel:variable name="CheckPriceResponse" messageType="prov:checkProductPriceResponse"/>
+    <bpel:variable name="RestockRequest" messageType="prov:makeRestockOrderRequest"/>
+    <bpel:variable name="RestockResponse" messageType="prov:makeRestockOrderResponse"/>
+  </bpel:variables>
+
+  <bpel:sequence name="main">
+
+    <bpel:receive name="receiveInput" partnerLink="client" portType="tns:ProyectoBPELPedido"
+                  operation="process" variable="input" createInstance="yes"/>
+
+    <bpel:assign name="InitStockPartnerRequest">
+      <bpel:copy>
+        <bpel:from variable="input" part="payload">
+          <bpel:query><![CDATA[tns:productId]]></bpel:query>
+        </bpel:from>
+        <bpel:to variable="StockPartnerRequest" part="parameters">
+          <bpel:query><![CDATA[ns:productId]]></bpel:query>
+        </bpel:to>
+      </bpel:copy>
+      <bpel:copy>
+        <bpel:from variable="input" part="payload">
+          <bpel:query><![CDATA[tns:quantity]]></bpel:query>
+        </bpel:from>
+        <bpel:to variable="StockPartnerRequest" part="parameters">
+          <bpel:query><![CDATA[ns:quantity]]></bpel:query>
+        </bpel:to>
+      </bpel:copy>
+    </bpel:assign>
+
+    <bpel:invoke name="InvokeStock" partnerLink="StockPartner" portType="ns:StockServiceHandlerPortType"
+                 operation="verifyAvailability" inputVariable="StockPartnerRequest" outputVariable="StockPartnerResponse"/>
+
+    <bpel:if name="IfNoStock">
+      <bpel:condition><![CDATA[not($StockPartnerResponse.parameters/ns:return = true())]]></bpel:condition>
+      <bpel:sequence name="IfStockFalse">
+
+        <bpel:assign name="InitCheckPriceRequest">
+          <bpel:copy>
+            <bpel:from variable="input" part="payload">
+              <bpel:query><![CDATA[tns:productId]]></bpel:query>
+            </bpel:from>
+            <bpel:to variable="CheckPriceRequest" part="parameters">
+              <bpel:query><![CDATA[prov:productId]]></bpel:query>
+            </bpel:to>
+          </bpel:copy>
+          <bpel:copy>
+            <bpel:from variable="input" part="payload">
+              <bpel:query><![CDATA[tns:providerId]]></bpel:query>
+            </bpel:from>
+            <bpel:to variable="CheckPriceRequest" part="parameters">
+              <bpel:query><![CDATA[prov:providerId]]></bpel:query>
+            </bpel:to>
+          </bpel:copy>
+        </bpel:assign>
+
+        <bpel:invoke name="InvokeCheckPrice" partnerLink="ProvidePartner"
+                     portType="prov:ProviderServiceHandlerPortType"
+                     operation="checkProductPrice"
+                     inputVariable="CheckPriceRequest"
+                     outputVariable="CheckPriceResponse"/>
+
+        <bpel:assign name="InitRestockRequest">
+          <bpel:copy>
+            <bpel:from variable="input" part="payload">
+              <bpel:query><![CDATA[tns:productId]]></bpel:query>
+            </bpel:from>
+            <bpel:to variable="RestockRequest" part="parameters">
+              <bpel:query><![CDATA[prov:productId]]></bpel:query>
+            </bpel:to>
+          </bpel:copy>
+          <bpel:copy>
+            <bpel:from variable="input" part="payload">
+              <bpel:query><![CDATA[tns:quantity]]></bpel:query>
+            </bpel:from>
+            <bpel:to variable="RestockRequest" part="parameters">
+              <bpel:query><![CDATA[prov:quantity]]></bpel:query>
+            </bpel:to>
+          </bpel:copy>
+          <bpel:copy>
+            <bpel:from variable="input" part="payload">
+              <bpel:query><![CDATA[tns:providerId]]></bpel:query>
+            </bpel:from>
+            <bpel:to variable="RestockRequest" part="parameters">
+              <bpel:query><![CDATA[prov:providerId]]></bpel:query>
+            </bpel:to>
+          </bpel:copy>
+        </bpel:assign>
+
+        <bpel:invoke name="InvokeRestock" partnerLink="ProvidePartner"
+                     portType="prov:ProviderServiceHandlerPortType"
+                     operation="makeRestockOrder"
+                     inputVariable="RestockRequest"
+                     outputVariable="RestockResponse"/>
+      </bpel:sequence>
+    </bpel:if>
+
+    <bpel:assign name="SetOutput">
+      <bpel:copy>
+        <bpel:from>
+          <bpel:literal>
+            <tns:ProyectoBPELPedidoResponse xmlns:tns="http://localhost/bpel/ProyectoBPELPedido">
+              <tns:result>Pedido procesado correctamente</tns:result>
+            </tns:ProyectoBPELPedidoResponse>
+          </bpel:literal>
+        </bpel:from>
+        <bpel:to variable="output" part="payload"/>
+      </bpel:copy>
+    </bpel:assign>
+
+    <bpel:reply name="replyOutput" partnerLink="client" portType="tns:ProyectoBPELPedido"
+                operation="process" variable="output"/>
+
+  </bpel:sequence>
+</bpel:process>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://localhost/bpel/ProyectoBPELPedido" xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop" xmlns:stock="http://control.stock.org" xmlns:prov="http://control.provider.org" name="ProyectoBPELPedido" targetNamespace="http://localhost/bpel/ProyectoBPELPedido">
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     TYPE DEFINITION - List of types participating in this BPEL process 
+     The BPEL Designer will generate default request and response types
+     but you can define or import any XML Schema type and use them as part 
+     of the message types.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <plnk:partnerLinkType name="StockPartnerLinkType">
+  <plnk:role name="StockServiceHandlerRol" portType="stock:StockServiceHandlerPortType"/>
+</plnk:partnerLinkType>
+<plnk:partnerLinkType name="ProvideServiceHandlerLinkType">
+  <plnk:role name="ProvideServiceHandlerRol" portType="prov:ProviderServiceHandlerPortType"/>
+</plnk:partnerLinkType>
+
+    <import location="StockServiceHandler.wsdl" namespace="http://control.stock.org"/>
+    <import location="ProviderServiceHandler.wsdl" namespace="http://control.provider.org"/>
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://localhost/bpel/ProyectoBPELPedido">
+
+            <element name="ProyectoBPELPedidoRequest">
+                <complexType>
+                    <sequence>
+                        <element name="productId" type="int"/>
+                        <element name="providerId" type="int"/>
+                        <element name="quantity" type="int"/>
+                    </sequence>
+                </complexType>
+            </element>
+
+            <element name="ProyectoBPELPedidoResponse">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="string"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </types>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     MESSAGE TYPE DEFINITION - Definition of the message types used as 
+     part of the port type defintions
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <message name="ProyectoBPELPedidoRequestMessage">
+        <part element="tns:ProyectoBPELPedidoRequest" name="payload"/>
+    </message>
+    <message name="ProyectoBPELPedidoResponseMessage">
+        <part element="tns:ProyectoBPELPedidoResponse" name="payload"/>
+    </message>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     PORT TYPE DEFINITION - A port type groups a set of operations into
+     a logical service unit.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+
+    <!-- portType implemented by the ProyectoBPELPedido BPEL process -->
+    <portType name="ProyectoBPELPedido">
+        <operation name="process">
+            <input message="tns:ProyectoBPELPedidoRequestMessage"/>
+            <output message="tns:ProyectoBPELPedidoResponseMessage"/>
+        </operation>
+    </portType>   
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     PARTNER LINK TYPE DEFINITION
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <plnk:partnerLinkType name="ProyectoBPELPedido">
+        <plnk:role name="ProyectoBPELPedidoProvider" portType="tns:ProyectoBPELPedido"/>
+    </plnk:partnerLinkType>
+    
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     BINDING DEFINITION - Defines the message format and protocol details
+     for a web service.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <binding name="ProyectoBPELPedidoBinding" type="tns:ProyectoBPELPedido">
+    	<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    	<operation name="process">
+    		<soap:operation soapAction="http://localhost/bpel/ProyectoBPELPedido/process"/>
+    		<input>
+    			<soap:body use="literal"/>
+    		</input>
+    		<output>
+    			<soap:body use="literal"/>
+    		</output>
+    	</operation>
+    </binding>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SERVICE DEFINITION - A service groups a set of ports into
+     a service unit.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <service name="ProyectoBPELPedido">
+    	<port binding="tns:ProyectoBPELPedidoBinding" name="ProyectoBPELPedidoPort">
+    		<soap:address location="http://localhost:8080/ode/processes/ProyectoBPELPedido"/>
+
+    	</port>
+    </service>
+</definitions>
