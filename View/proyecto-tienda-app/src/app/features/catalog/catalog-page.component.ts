@@ -68,8 +68,8 @@ export class CatalogPageComponent implements OnInit {
     alert(`${product.name} añadido al carrito.`);
   }
 
-  trackByProductId(index: number, product: Product): number {
-    return product.id;
+  trackByProductId(index: number, product: Product): string {
+    return product._id;
   }
 
   onSearchChange(value: string): void {

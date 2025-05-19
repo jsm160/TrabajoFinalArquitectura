@@ -14,7 +14,6 @@ export class CartService {
   private readonly localStorageKey = 'shoppingCart';
 
   constructor() {
-    localStorage.removeItem(this.localStorageKey);
     this.loadCartFromLocalStorage();
   }
 
@@ -32,30 +31,18 @@ export class CartService {
     }
   }
 
-  /**
-   * Guarda el estado actual del carrito en localStorage.
-   * @param items Los ítems del carrito a guardar.
-   */
   private saveCartToLocalStorage(items: CartItem[]): void {
     localStorage.setItem(this.localStorageKey, JSON.stringify(items));
     console.log('CartService: Cart saved to localStorage.');
   }
 
-  /**
-   * Método centralizado para actualizar el BehaviorSubject y persistir en localStorage.
-   * @param items El nuevo array de ítems del carrito.
-   */
   private updateCartState(items: CartItem[]): void {
     this.cartItemsSubject.next(items);
     this.saveCartToLocalStorage(items);
-
   }
 
   /**
    * Añade un producto al carrito.
-   * Si el producto ya existe, incrementa su cantidad.
-   * @param productToAdd El producto a añadir.
-   * @param quantityToAdd La cantidad a añadir (por defecto 1).
    */
   addProduct(productToAdd: Product, quantityToAdd: number = 1): void {
     if (quantityToAdd <= 0) {
@@ -65,69 +52,65 @@ export class CartService {
 
     const currentItems = this.cartItemsSubject.getValue();
     const existingItemIndex = currentItems.findIndex(
-      (item) => item.product.id === productToAdd.id
+      (item) => item.product._id === productToAdd._id
     );
 
     let updatedItems: CartItem[];
 
     if (existingItemIndex > -1) {
-      // El producto ya está en el carrito, actualiza la cantidad
       updatedItems = currentItems.map((item, index) =>
         index === existingItemIndex
           ? { ...item, quantity: item.quantity + quantityToAdd }
           : item
       );
-      console.log(`CartService: Increased quantity for ${productToAdd.name} by ${quantityToAdd}. New quantity: ${updatedItems[existingItemIndex].quantity}`);
+      console.log(`CartService: Increased quantity for ${productToAdd.name} by ${quantityToAdd}.`);
     } else {
-      // El producto es nuevo en el carrito
       updatedItems = [...currentItems, { product: productToAdd, quantity: quantityToAdd }];
       console.log(`CartService: Added new product ${productToAdd.name} with quantity ${quantityToAdd}.`);
     }
+
     this.updateCartState(updatedItems);
   }
 
   /**
    * Actualiza la cantidad de un producto específico en el carrito.
-   * Si la nueva cantidad es 0 o menos, el producto se elimina del carrito.
-   * @param productId El ID del producto a actualizar.
-   * @param newQuantity La nueva cantidad.
    */
-  updateQuantity(productId: number, newQuantity: number): void {
+  updateQuantity(productId: string, newQuantity: number): void {
     const currentItems = this.cartItemsSubject.getValue();
     let updatedItems: CartItem[];
 
     if (newQuantity <= 0) {
-      // Si la nueva cantidad es 0 o negativa, eliminamos el producto
-      updatedItems = currentItems.filter(item => item.product.id !== productId);
+      updatedItems = currentItems.filter(item => item.product._id !== productId);
       console.log(`CartService: Removed product ID ${productId} due to quantity update to ${newQuantity}.`);
     } else {
       updatedItems = currentItems.map(item =>
-        item.product.id === productId ? { ...item, quantity: newQuantity } : item
+        item.product._id === productId ? { ...item, quantity: newQuantity } : item
       );
-      const updatedItem = updatedItems.find(item => item.product.id === productId);
+      const updatedItem = updatedItems.find(item => item.product._id === productId);
       if (updatedItem) {
         console.log(`CartService: Updated quantity for product ID ${productId} to ${newQuantity}.`);
       } else {
         console.warn(`CartService: Product ID ${productId} not found during quantity update.`);
       }
     }
+
     this.updateCartState(updatedItems);
   }
 
   /**
    * Elimina un producto del carrito.
-   * @param productId El ID del producto a eliminar.
    */
-  removeProduct(productId: number): void {
+  removeProduct(productId: string): void {
     const currentItems = this.cartItemsSubject.getValue();
-    const productToRemove = currentItems.find(item => item.product.id === productId);
-    const updatedItems = currentItems.filter(item => item.product.id !== productId);
+    const productToRemove = currentItems.find(item => item.product._id === productId);
+    const updatedItems = currentItems.filter(item => item.product._id !== productId);
 
     if (productToRemove) {
       console.log(`CartService: Removed product ${productToRemove.product.name} (ID: ${productId}) from cart.`);
     } else {
       console.warn(`CartService: Attempted to remove product ID ${productId}, but it was not found in cart.`);
     }
+
     this.updateCartState(updatedItems);
   }
 
@@ -140,8 +123,7 @@ export class CartService {
   }
 
   /**
-   * Calcula el valor monetario total de todos los ítems en el carrito.
-   * @returns Un Observable que emite el total del carrito.
+   * Devuelve el total en precio del carrito.
    */
   getTotal(): Observable<number> {
     return this.cart$.pipe(
@@ -150,9 +132,7 @@ export class CartService {
   }
 
   /**
-   * Obtiene el número total de ítems individuales en el carrito (suma de todas las cantidades).
-   * Útil para mostrar un contador en un ícono de carrito, por ejemplo.
-   * @returns Un Observable que emite la cuenta total de ítems.
+   * Devuelve el número total de ítems (suma de cantidades).
    */
   getTotalItemCount(): Observable<number> {
     return this.cart$.pipe(
@@ -161,11 +141,9 @@ export class CartService {
   }
 
   /**
-   * Obtiene una instantánea del estado actual de los ítems del carrito.
-   * Úsalo con precaución, prefiere suscribirte a `cart$` para reactividad.
-   * @returns Un array con los ítems actuales del carrito.
+   * Snapshot del estado actual del carrito.
    */
   getCurrentCartItems(): CartItem[] {
     return this.cartItemsSubject.getValue();
   }
-} 
+}

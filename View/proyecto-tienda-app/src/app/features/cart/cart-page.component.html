@@ -8,7 +8,7 @@
       <li *ngFor="let item of cartItems; trackBy: trackByCartItemId" class="cart-item-card">
         <div class="item-image">
           <ng-container *ngIf="item.product.imageUrl; else defaultIcon">
-            <img [src]="item.product.imageUrl" [alt]="item.product.name" class="product-thumbnail">
+            <img [src]="item.product.imageUrl" [alt]="item.product.name" class="product-thumbnail" />
           </ng-container>
           <ng-template #defaultIcon>
             <div class="icon-placeholder">
@@ -23,20 +23,20 @@
         </div>
 
         <div class="item-quantity">
-          <label [for]="'quantity-' + item.product.id">Cantidad:</label>
+          <label [for]="'quantity-' + item.product._id">Cantidad:</label>
           <input type="number" min="1" [value]="item.quantity"
-                 (change)="updateQuantity(item.product.id, $event)"
-                 [id]="'quantity-' + item.product.id" />
+            (change)="updateQuantity(item.product._id.toString(), $event)" [id]="'quantity-' + item.product._id" />
         </div>
 
         <div class="item-subtotal">
           Subtotal: {{ item.product.price * item.quantity | currency:'USD' }}
         </div>
 
-        <button class="remove-button" (click)="removeProduct(item.product.id)" aria-label="Eliminar">
+        <button class="remove-button" (click)="removeProduct(item.product._id.toString())" aria-label="Eliminar">
           <span aria-hidden="true">×</span>
         </button>
       </li>
+
     </ul>
 
     <ng-template #emptyCart>

@@ -1,15 +1,42 @@
-<h2>Pedidos realizados</h2>
+<h2 class="orders-title">
+  <i class="fas fa-clipboard-list"></i> Pedidos Realizados
+</h2>
 
-<div *ngFor="let pedido of pedidos" class="pedido-card">
-  <h3>Cliente: {{ pedido.userEmail }}</h3>
-  <p>Total: {{ pedido.totalPrice | currency:'EUR' }}</p>
-  <p>Estado: {{ pedido.status }}</p>
+<div *ngIf="pedidos.length > 0; else noOrders">
+  <div *ngFor="let pedido of pedidos" class="order-card">
+    <div class="order-header">
+      <span class="order-client"><i class="fas fa-user"></i> {{ pedido.userEmail }}</span>
+      <span class="order-status" [ngClass]="pedido.status">{{ pedido.status | uppercase }}</span>
+      <span class="order-date"><i class="fas fa-clock"></i> {{ pedido.createdAt | date:'medium' }}</span>
+    </div>
 
-  <ul>
-    <li *ngFor="let item of pedido.items">
-      {{ item.productName }} - {{ item.quantity }} uds - {{ item.total | currency:'EUR' }}
-    </li>
-  </ul>
+    <table class="order-items">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pedido.items">
+          <td>{{ item.productName }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unitPrice | currency:'USD' }}</td>
+          <td>{{ item.total | currency:'USD' }}</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <hr>
+    <div class="order-summary">
+      <strong>Total del pedido:</strong> {{ pedido.totalPrice | currency:'USD' }}
+    </div>
+  </div>
 </div>
+
+<ng-template #noOrders>
+  <div class="no-orders-message">
+    <p><i class="fas fa-box-open"></i> No se han realizado pedidos aún.</p>
+  </div>
+</ng-template>

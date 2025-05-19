@@ -1,17 +1,17 @@
 <div class="product-card-modern" *ngIf="product">
-  <a [routerLink]="['/catalog', product.id]" class="product-img-link">
+  <a [routerLink]="['/catalog', product._id]" class="product-img-link">
     <i class="fas fa-box-open"></i>
   </a>
 
   <div class="product-body">
     <h3 class="product-title">
-      <a [routerLink]="['/catalog', product.id]">
+      <a [routerLink]="['/catalog', product._id]">
         <i class="fas fa-tag"></i> {{ product.name }}
       </a>
     </h3>
 
     <p class="product-desc">
-      {{ product.description || 'Sin descripción disponible' | slice:0:80 }}{{ (product.description?.length || 0) > 80 ? '...' : '' }}
+      {{ product.description || 'Sin descripción disponible' | slice:0:80 }}{{ (product.description.length || 0) > 80 ? '...' : '' }}
     </p>
 
     <div class="product-meta">

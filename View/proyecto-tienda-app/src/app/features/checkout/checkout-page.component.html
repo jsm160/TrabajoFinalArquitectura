@@ -18,27 +18,71 @@
       <tr *ngFor="let item of cartItems">
         <td>{{ item.product.name }}</td>
         <td>{{ item.quantity }}</td>
-        <td>{{ item.product.price | currency:'USD' }}</td>
-        <td>{{ item.product.price * item.quantity | currency:'USD' }}</td>
+        <td>{{ item.product.price | currency: 'USD' }}</td>
+        <td>{{ item.product.price * item.quantity | currency: 'USD' }}</td>
       </tr>
     </tbody>
   </table>
 
   <!-- Total -->
   <div class="checkout-total">
-    <p><strong>Total:</strong> {{ totalPrice | currency:'USD' }}</p>
+    <p><strong>Total:</strong> {{ totalPrice | currency: 'USD' }}</p>
+  </div>
+
+  <!-- Datos de pago -->
+  <div class="payment-section">
+    <h3>Datos de Pago</h3>
+
+    <div class="form-group">
+      <label for="nombreTitular">Nombre del Titular</label>
+      <input
+        type="text"
+        id="nombreTitular"
+        [(ngModel)]="nombreTitular"
+        name="nombreTitular"
+        placeholder="Ej: Juan Pérez"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="numeroTarjeta">Número de Tarjeta</label>
+      <input
+        type="text"
+        id="numeroTarjeta"
+        [(ngModel)]="numeroTarjeta"
+        name="numeroTarjeta"
+        maxlength="19"
+        placeholder="**** **** **** ****"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="monto">Cantidad a Pagar</label>
+      <input
+        type="text"
+        id="monto"
+        [value]="totalPrice | currency:'USD'"
+        readonly
+      />
+    </div>
   </div>
 
   <!-- Mensajes -->
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
   </div>
+
   <div *ngIf="successMessage" class="success-message">
     {{ successMessage }}
   </div>
 
   <!-- Confirmar compra -->
-  <button (click)="confirmPurchase()" [disabled]="!cartItems.length">
+  <button
+    (click)="confirmPurchase()"
+    [disabled]="!nombreTitular || !numeroTarjeta || !cartItems.length"
+  >
     Confirmar Pedido
   </button>
 </div>

@@ -1,6 +1,6 @@
 // src/app/features/catalog/catalog.interface.ts
 export interface Product {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     price: number;

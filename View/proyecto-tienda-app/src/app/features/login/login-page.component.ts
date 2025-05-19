@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
-import { AuthService } from '../../core/auth/auth.service'; // Ajusta la ruta si es diferente
+import { AuthService } from '../../core/auth/auth.service';
 import { LoginForm } from './login.interface';
 
 @Component({
@@ -13,11 +13,10 @@ import { LoginForm } from './login.interface';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink // Para enlaces como "¿Olvidaste tu contraseña?" o "Regístrate"
+    RouterLink
   ],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
-  // No necesitas providers: [AuthService] aquí si está providedIn: 'root'
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
@@ -26,22 +25,21 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private fb = inject(FormBuilder); // FormBuilder también se puede inyectar
+  private fb = inject(FormBuilder);
 
   private authSubscription!: Subscription;
 
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]] // Añadido minLength como ejemplo
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   ngOnInit(): void {
-    // Si ya está logueado, redirigir (esto también podría manejarse con un AuthGuard)
     this.authSubscription = this.authService.isLoggedIn$.subscribe(isLoggedIn => {
       if (isLoggedIn) {
-        this.router.navigate(['/catalog']); // O a la página de dashboard/perfil
+        this.router.navigate(['/catalog']);
       }
     });
   }
@@ -50,9 +48,9 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   get password() { return this.loginForm.get('password'); }
 
   onSubmit(): void {
-    this.errorMessage = null; // Limpiar mensajes de error previos
+    this.errorMessage = null;
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched(); // Marcar todos los campos como tocados para mostrar errores
+      this.loginForm.markAllAsTouched();
       return;
     }
 
@@ -63,16 +61,23 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isLoading = false;
         console.log('Login successful', response);
-        // La redirección ya se maneja en el ngOnInit al suscribirse a isLoggedIn$
-        // o podrías hacerlo explícitamente aquí si lo prefieres:
-        // this.router.navigate(['/catalog']);
+
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error.message || 'Credenciales incorrectas o error en el servidor.';
+
+        if (error.status === 401) {
+          this.errorMessage = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+        } else if (error.status === 404) {
+          this.errorMessage = 'Usuario no encontrado.';
+        } else {
+          this.errorMessage = error?.error?.message || 'Credenciales incorrectas. Por favor, intentelo de nuevo.';
+        }
+
         console.error('Error en el login:', error);
-        this.loginForm.patchValue({ password: ''}); // Limpiar campo de contraseña por seguridad
+        this.loginForm.patchValue({ password: '' });
       }
+
     });
   }
 

@@ -4,12 +4,12 @@ const Product = require('../models/product.model');
 exports.createOrder = async (req, res) => {
   const { customerName, products } = req.body;
 
-  if (!products || !Array.isArray(products)) {
-    return res.status(400).json({ message: 'Formato incorrecto de productos' });
+  if (!customerName || !Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({ message: 'Datos incompletos para crear el pedido.' });
   }
 
-  let total = 0;
-  let updatedProducts = [];
+  let totalPrice = 0;
+  let items = [];
   let needsRestock = [];
 
   for (const item of products) {
@@ -19,68 +19,55 @@ exports.createOrder = async (req, res) => {
     const requestedQty = item.quantity;
     const availableQty = dbProduct.stock;
 
-    if (availableQty >= requestedQty) {
-      dbProduct.stock -= requestedQty;
-      await dbProduct.save();
-      total += dbProduct.price * requestedQty;
-      updatedProducts.push({ productId: dbProduct._id, quantity: requestedQty });
-    } else if (availableQty > 0) {
-      dbProduct.stock = 0;
-      await dbProduct.save();
-      total += dbProduct.price * availableQty;
-      updatedProducts.push({ productId: dbProduct._id, quantity: availableQty });
+    const servedQty = Math.min(requestedQty, availableQty);
+    dbProduct.stock -= servedQty;
+    await dbProduct.save();
 
-      // Marcar para reposición
+    const itemTotal = dbProduct.price * servedQty;
+    totalPrice += itemTotal;
+
+    items.push({
+      productName: dbProduct.name,
+      unitPrice: dbProduct.price,
+      quantity: servedQty,
+      total: itemTotal
+    });
+
+    if (requestedQty > availableQty) {
       needsRestock.push({
         productId: dbProduct._id,
         requested: requestedQty,
         served: availableQty,
         missing: requestedQty - availableQty
       });
-    } else {
-      needsRestock.push({
-        productId: dbProduct._id,
-        requested: requestedQty,
-        served: 0,
-        missing: requestedQty
-      });
     }
   }
 
   const newOrder = new Order({
-    customerName,
-    products: updatedProducts,
-    total,
+    userEmail: customerName,      // Mapea correctamente
+    items,                        // Guarda el array detallado
+    totalPrice,
     status: needsRestock.length > 0 ? 'pendiente_restock' : 'completo'
   });
 
   await newOrder.save();
 
-  // Notificar si hay productos sin stock completo
+  // Simulación de reabastecimiento
   if (needsRestock.length > 0) {
-    console.log('🔔 Productos en falta:');
-    needsRestock.forEach(p => {
-      console.log(`Producto ${p.productId} - Faltan ${p.missing} unidades`);
-    });
-
-    // Simulamos que se reabastece tras 5 segundos
     setTimeout(() => {
       needsRestock.forEach(async (p) => {
         const prod = await Product.findById(p.productId);
         if (prod) {
           prod.stock += p.missing;
           await prod.save();
-          console.log(`✅ Reabastecido el producto ${prod.name}, +${p.missing} unidades`);
-
-          // Simulación de notificación al usuario
-          console.log(`📧 Notificación enviada al cliente: ¡Producto ${prod.name} disponible de nuevo!`);
+          console.log(`✅ Reabastecido ${prod.name} con ${p.missing} unidades.`);
         }
       });
-    }, 5000); // Espera 5 segundos simulando el reabastecimiento
+    }, 5000);
   }
 
   res.status(201).json({
-    message: 'Pedido registrado',
+    message: 'Pedido registrado correctamente',
     order: newOrder,
     productosFaltantes: needsRestock
   });
@@ -119,3 +106,17 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar el pedido' });
   }
 };
+
+
+exports.getOrdersByUser = async (req, res) => {
+  const customerName = req.params.customerName;
+
+  try {
+    const orders = await Order.find({ customerName }).sort({ createdAt: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error al obtener pedidos del usuario:', error);
+    res.status(500).json({ message: 'Error al obtener pedidos del usuario.' });
+  }
+};
+

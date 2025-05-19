@@ -24,7 +24,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   private cartService = inject(CartService);
   private router = inject(Router);
-
   private subscriptions = new Subscription();
 
   constructor() {
@@ -40,7 +39,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
     this.isLoggedIn = !!localStorage.getItem('authToken');
   }
 
-  updateQuantity(productId: number, event: Event): void {
+  updateQuantity(productId: string, event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     const newQuantity = parseInt(inputElement.value, 10);
 
@@ -52,7 +51,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
       }
     } else {
       const currentItem = this.cartService.getCurrentCartItems().find(
-        (item: CartItem) => item.product.id === productId
+        (item: CartItem) => item.product._id.toString() === productId
       );
       if (currentItem) {
         inputElement.value = currentItem.quantity.toString();
@@ -60,7 +59,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  removeProduct(productId: number): void {
+  removeProduct(productId: string): void {
     this.cartService.removeProduct(productId);
   }
 
@@ -81,10 +80,9 @@ export class CartPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackByCartItemId(index: number, item: CartItem): number {
-    return item.product.id;
+  trackByCartItemId(index: number, item: CartItem): string {
+    return item.product._id.toString();
   }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

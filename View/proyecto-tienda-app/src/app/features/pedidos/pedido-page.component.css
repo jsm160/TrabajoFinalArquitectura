@@ -1,7 +1,67 @@
-.pedido-card {
-  border: 1px solid #ccc;
-  padding: 1rem;
+.orders-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #1e293b;
+}
+
+.order-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
-  border-radius: 6px;
-  background-color: #fafafa;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.order-status.completo {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.order-status.pendiente,
+.order-status.pendiente_restock {
+  color: #f97316;
+  font-weight: bold;
+}
+
+.order-items {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.order-items th,
+.order-items td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.order-items th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.order-summary {
+  text-align: right;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.no-orders-message {
+  text-align: center;
+  color: #6b7280;
+  padding: 3rem 1rem;
+  background-color: #f9fafb;
+  border-radius: 10px;
 }
