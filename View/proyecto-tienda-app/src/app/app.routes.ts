@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { RegisterPageComponent } from './features/register/register-page.component';
 // import { authGuard } from './core/guards/auth.guard'; // Descomenta si implementas guardas
 
 export const routes: Routes = [
@@ -28,6 +29,7 @@ export const routes: Routes = [
     path: 'pedidos',
     loadComponent: () => import('./features/pedidos/pedido-page.component').then(m => m.PedidoPageComponent)
   },
+  { path: 'register', component: RegisterPageComponent },
   { path: '', redirectTo: 'catalog', pathMatch: 'full' },
   { path: '**', redirectTo: 'catalog' }
 ];

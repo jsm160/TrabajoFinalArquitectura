@@ -3,11 +3,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { LoginForm, AuthResponse } from '../../features/login/login.interface'; 
+import { LoginForm, AuthResponse } from '../../features/login/login.interface';
 import { environment } from '../../app.config';
 
 @Injectable({
-  providedIn: 'root' 
+  providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = environment.apiAuth;
@@ -48,6 +48,11 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem(this.authTokenKey);
   }
+
+  register(data: { email: string; password: string }): Observable<any> {
+    return this.http.post('http://localhost:3003/api/auth/register', data);
+  }
+
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error desconocido.';

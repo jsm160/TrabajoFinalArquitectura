@@ -141,6 +141,13 @@ button:disabled {
 .form-links a:hover {
   text-decoration: underline;
 }
+.login-image img {
+  max-width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

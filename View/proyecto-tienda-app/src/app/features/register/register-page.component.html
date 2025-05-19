@@ -1,0 +1,52 @@
+<div class="register-centered-container">
+  <div class="register-card">
+    <div class="register-logo">
+      <img src="assets/images/logo.png" alt="Logo de la tienda">
+    </div>
+
+    <h2><i class="fa fa-user-plus"></i> Crear cuenta</h2>
+    <p class="register-subtitle">Completa el formulario para registrarte</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="email"><i class="fa fa-envelope"></i> Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="ejemplo@correo.com"
+          [ngClass]="{ 'input-error': registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty) }">
+        <div *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)" class="error-message">
+          <small *ngIf="registerForm.get('email')?.errors?.['required']">Correo requerido.</small>
+          <small *ngIf="registerForm.get('email')?.errors?.['email']">Correo inválido.</small>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="password"><i class="fa fa-lock"></i> Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Mínimo 6 caracteres"
+          [ngClass]="{ 'input-error': registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty) }">
+        <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)" class="error-message">
+          <small *ngIf="registerForm.get('password')?.errors?.['required']">Contraseña requerida.</small>
+          <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Debe tener al menos 6 caracteres.</small>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="server-error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid">
+        <i class="fa fa-user-plus"></i> Registrarse
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <p>¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>

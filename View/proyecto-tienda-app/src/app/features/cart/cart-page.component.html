@@ -1,59 +1,58 @@
-<!-- src/app/features/cart/cart-page.component.html -->
 <div class="cart-page-container">
-    <header class="cart-header">
-      <h1>Tu Carrito de Compras</h1>
-    </header>
-  
-    <div *ngIf="(cartItems$ | async) as cartItems">
-      <ul *ngIf="cartItems.length > 0; else emptyCart" class="cart-items-list">
-        <li *ngFor="let item of cartItems; trackBy: trackByCartItemId" class="cart-item">
-          <div class="item-image">
-            <img [src]="item.product.imageUrl || 'assets/images/placeholder.png'" [alt]="item.product.name" class="product-thumbnail">
-          </div>
-          <div class="item-details">
-            <h3 class="item-name">{{ item.product.name }}</h3>
-            <p class="item-price-unit">Precio unitario: {{ item.product.price | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-          <div class="item-quantity">
-            <label [for]="'quantity-' + item.product.id">Cantidad:</label>
-            <input
-              type="number"
-              [id]="'quantity-' + item.product.id"
-              [value]="item.quantity"
-              min="0"
-              [max]="item.product.stock || 99"
-              (change)="updateQuantity(item.product.id, $event)"
-              class="quantity-input">
-          </div>
-          <div class="item-total">
-            Subtotal: {{ (item.product.price * item.quantity) | currency:'USD':'symbol':'1.2-2' }}
-          </div>
-          <button (click)="removeProduct(item.product.id)" class="remove-button" aria-label="Eliminar producto">
-            <span aria-hidden="true">×</span> 
-          </button>
-        </li>
-      </ul>
-  
-      <ng-template #emptyCart>
-        <div class="empty-cart-message">
-          <p>🛒 Tu carrito está vacío.</p>
-          <p>¿Por qué no exploras nuestro <a routerLink="/catalog">catálogo</a> y encuentras algo que te guste?</p>
-        </div>
-      </ng-template>
-  
-      <div *ngIf="cartItems.length > 0" class="cart-summary">
-        <h3 class="total-amount">Total: {{ (total$ | async) | currency:'USD':'symbol':'1.2-2' }}</h3>
-        <div class="cart-actions">
-          <button (click)="clearCart()" class="action-button clear-button">Vaciar Carrito</button>
-          <ng-container *ngIf="isLoggedIn">
-            <button (click)="goToCheckout()" class="action-button checkout-button">
-              Proceder al Pago
-            </button>
+  <header class="cart-header">
+    <h1><i class="fas fa-shopping-cart"></i> Tu Carrito de Compras</h1>
+  </header>
+
+  <div *ngIf="(cartItems$ | async) as cartItems">
+    <ul *ngIf="cartItems.length > 0; else emptyCart" class="cart-items-list">
+      <li *ngFor="let item of cartItems; trackBy: trackByCartItemId" class="cart-item-card">
+        <div class="item-image">
+          <ng-container *ngIf="item.product.imageUrl; else defaultIcon">
+            <img [src]="item.product.imageUrl" [alt]="item.product.name" class="product-thumbnail">
           </ng-container>
-          <p *ngIf="!isLoggedIn" class="login-prompt">
-            Debes <a routerLink="/login">iniciar sesión</a> para proceder al pago.
-          </p>
+          <ng-template #defaultIcon>
+            <div class="icon-placeholder">
+              <i class="fas fa-box-open"></i>
+            </div>
+          </ng-template>
         </div>
+
+        <div class="item-info">
+          <h3>{{ item.product.name }}</h3>
+          <p>Precio unitario: {{ item.product.price | currency:'USD' }}</p>
+        </div>
+
+        <div class="item-quantity">
+          <label [for]="'quantity-' + item.product.id">Cantidad:</label>
+          <input type="number" min="1" [value]="item.quantity"
+                 (change)="updateQuantity(item.product.id, $event)"
+                 [id]="'quantity-' + item.product.id" />
+        </div>
+
+        <div class="item-subtotal">
+          Subtotal: {{ item.product.price * item.quantity | currency:'USD' }}
+        </div>
+
+        <button class="remove-button" (click)="removeProduct(item.product.id)" aria-label="Eliminar">
+          <span aria-hidden="true">×</span>
+        </button>
+      </li>
+    </ul>
+
+    <ng-template #emptyCart>
+      <div class="empty-cart-message">
+        <p>🛒 Tu carrito está vacío.</p>
+        <p><a routerLink="/catalog">Explora nuestro catálogo</a> para comenzar a comprar.</p>
+      </div>
+    </ng-template>
+
+    <div *ngIf="cartItems.length > 0" class="cart-summary">
+      <h3>Total: {{ total$ | async | currency:'USD' }}</h3>
+      <div class="cart-actions">
+        <button class="clear-button" (click)="clearCart()">Vaciar Carrito</button>
+        <button class="checkout-button" *ngIf="isLoggedIn" (click)="goToCheckout()">Proceder al Pago</button>
+        <p *ngIf="!isLoggedIn">Debes <a routerLink="/login">iniciar sesión</a> para pagar.</p>
       </div>
     </div>
   </div>
+</div>

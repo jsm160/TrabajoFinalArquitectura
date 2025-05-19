@@ -1,63 +1,44 @@
 <header class="app-header">
-    <div class="header-container">
-      <div class="logo-container">
-        <a routerLink="/" class="logo-link" aria-label="Página de inicio">
-          <img src="assets/images/logo_placeholder.png" alt="Logo MiTienda" class="logo-image" *ngIf="true">
-          <span class="logo-text" *ngIf="false">MiTienda</span> 
-        </a>
-      </div>
-  
-      <nav class="main-navigation">
-        <ul>
-          <li>
-            <a
-              routerLink="/catalog"
-              routerLinkActive="active-link"
-              [routerLinkActiveOptions]="{ exact: true }"
-              aria-label="Ver catálogo de productos">
-              Catálogo
-            </a>
-          </li>
-          <li>
-            <a
-              routerLink="/cart"
-              routerLinkActive="active-link"
-              aria-label="Ver carrito de compras">
-              Carrito
-              <span *ngIf="(cartItemCount$ | async) as count" class="cart-badge" [class.has-items]="count > 0">
-                {{ count > 0 ? count : '' }}
-              </span>
-            </a>
-          </li>
-  
-          <!-- Enlaces de Autenticación Dinámicos -->
-          <ng-container *ngIf="(isLoggedIn$ | async); else showLoginLink">
-            <li>
-              <button (click)="logout()" class="nav-link logout-button" aria-label="Cerrar sesión">
-                Cerrar Sesión
-              </button>
-            </li>
-          </ng-container>
-  
-          <ng-template #showLoginLink>
-            <li>
-              <a routerLink="/login" routerLinkActive="active-link" aria-label="Iniciar sesión">
-                Iniciar Sesión
-              </a>
-            </li>
-            <!-- Opcional: Enlace a Registro -->
-            <!--
-            <li>
-              <a routerLink="/register" routerLinkActive="active-link" aria-label="Crear una cuenta">
-                Registrarse
-              </a>
-            </li>
-            -->
-          </ng-template>
-        </ul>
-      </nav>
-  
-      <div class="header-actions">
-      </div>
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <a routerLink="/" class="logo-link">
+        <img src="assets/images/logo.png" alt="Logo MiTienda" class="logo-image" />
+      </a>
+
+      <!-- Botón Catálogo -->
+      <a routerLink="/catalog" routerLinkActive="active-link" class="catalog-button">
+        <i class="fas fa-store"></i>
+        Catálogo
+      </a>
     </div>
-  </header>
+
+    <!-- Acciones a la derecha -->
+    <div class="header-actions">
+      <!-- Carrito -->
+      <a routerLink="/cart" class="icon-button cart-icon" aria-label="Carrito">
+        <i class="fas fa-shopping-cart"></i>
+        <span *ngIf="(cartItemCount$ | async) as count" class="cart-badge" [class.has-items]="count > 0">
+          {{ count > 0 ? count : '' }}
+        </span>
+      </a>
+
+      <!-- Usuario -->
+      <ng-container *ngIf="(isLoggedIn$ | async); else loginLink">
+        <div class="user-dropdown" (click)="toggleDropdown()" tabindex="0">
+          <i class="fas fa-user-circle profile-icon"></i>
+          <span class="username">{{ userEmail }}</span>
+          <div class="dropdown-menu" *ngIf="showDropdown">
+            <button (click)="logout()">Cerrar sesión</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #loginLink>
+        <a routerLink="/login" class="icon-button" aria-label="Iniciar sesión">
+          <i class="fas fa-user-circle"></i>
+        </a>
+      </ng-template>
+    </div>
+  </div>
+</header>

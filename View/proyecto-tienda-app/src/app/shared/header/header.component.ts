@@ -1,44 +1,51 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { CartService } from '../../features/cart/cart.service'; 
-import { AuthService } from '../../core/auth/auth.service';   
+import { CartService } from '../../features/cart/cart.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    RouterLinkActive
-  ],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  // Inyección de servicios
-  private cartService = inject(CartService);
-  private authService = inject(AuthService);
-
   cartItemCount$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
+  userEmail: string | null = null;
+  showDropdown = false;
 
+  private authService = inject(AuthService);
+  private cartService = inject(CartService);
   private subscriptions = new Subscription();
 
   constructor() {
-    // Inicialización de los observables
     this.cartItemCount$ = this.cartService.getTotalItemCount();
     this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
 
   ngOnInit(): void {
+    const token = this.authService.getToken();
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        this.userEmail = decoded.email || 'Usuario';
+      } catch (e) {
+        this.userEmail = 'Usuario';
+      }
+    }
   }
 
-  // Método para realizar el logout
+  toggleDropdown(): void {
+    this.showDropdown = !this.showDropdown;
+  }
+
   logout(): void {
     this.authService.logout();
-    // El AuthService se encarga de redirigir a /login después del logout.
   }
 
   ngOnDestroy(): void {
