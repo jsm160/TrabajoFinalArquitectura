@@ -1,1 +1,31 @@
-<p>product-card works!</p>
+<div class="product-card-modern" *ngIf="product">
+  <a [routerLink]="['/catalog', product.id]" class="product-img-link">
+    <i class="fas fa-box-open"></i>
+  </a>
+
+  <div class="product-body">
+    <h3 class="product-title">
+      <a [routerLink]="['/catalog', product.id]">
+        <i class="fas fa-tag"></i> {{ product.name }}
+      </a>
+    </h3>
+
+    <p class="product-desc">
+      {{ product.description || 'Sin descripción disponible' | slice:0:80 }}{{ (product.description?.length || 0) > 80 ? '...' : '' }}
+    </p>
+
+    <div class="product-meta">
+      <span class="product-price">
+        <i class="fas fa-dollar-sign"></i> {{ product.price | currency:'USD' }}
+      </span>
+      <button (click)="onAddToCart()" [disabled]="!hasStock()" class="btn-cart">
+        <i class="fas" [ngClass]="hasStock() ? 'fa-cart-plus' : 'fa-ban'"></i>
+        {{ hasStock() ? 'Añadir' : 'Agotado' }}
+      </button>
+    </div>
+
+    <p *ngIf="isLowStock()" class="stock-warning">
+      <i class="fas fa-exclamation-circle"></i> ¡Quedan {{ product.stock }}!
+    </p>
+  </div>
+</div>

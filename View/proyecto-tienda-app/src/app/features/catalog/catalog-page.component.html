@@ -1,1 +1,36 @@
-<p>catalog-page works!</p>
+<div class="catalog-page-modern">
+  <header class="catalog-modern-header">
+    <h1><i class="fa fa-box-open"></i> Nuestro Catálogo</h1>
+    <p>Explora productos cuidadosamente seleccionados para ti.</p>
+  </header>
+
+  <!-- Filtros -->
+  <div class="catalog-filters">
+    <input type="text" placeholder="🔍 Buscar producto..." (input)="handleSearchInput($event)">
+    <select (change)="handleCategoryChange($event)">
+      <option value="all">Todas las categorías</option>
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+    <input type="number" placeholder="Precio máx." (input)="handleMaxPriceInput($event)">
+  </div>
+
+  <div *ngIf="isLoading" class="catalog-loading">
+    <i class="fa fa-spinner fa-spin"></i> Cargando productos...
+  </div>
+
+  <div *ngIf="!(isLoading) && (filteredProducts$ | async) as products">
+    <div *ngIf="products.length > 0; else noProducts" class="modern-product-grid">
+      <app-product-card
+        *ngFor="let product of products; trackBy: trackByProductId"
+        [product]="product"
+        (addToCart)="onAddToCart($event)">
+      </app-product-card>
+    </div>
+    <ng-template #noProducts>
+      <div class="no-products-modern">
+        <i class="fa fa-boxes fa-2x"></i>
+        <p>No hay productos que coincidan con tus filtros.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

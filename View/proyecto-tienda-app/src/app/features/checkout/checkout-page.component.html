@@ -1,1 +1,44 @@
-<p>checkout-page works!</p>
+<div class="checkout-container">
+  <h2>Resumen del Pedido</h2>
+
+  <!-- Mostrar correo del usuario -->
+  <p><strong>Cliente:</strong> {{ userEmail }}</p>
+
+  <!-- Lista de productos -->
+  <table class="checkout-table" *ngIf="cartItems.length > 0">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cartItems">
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.product.price | currency:'USD' }}</td>
+        <td>{{ item.product.price * item.quantity | currency:'USD' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Total -->
+  <div class="checkout-total">
+    <p><strong>Total:</strong> {{ totalPrice | currency:'USD' }}</p>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <!-- Confirmar compra -->
+  <button (click)="confirmPurchase()" [disabled]="!cartItems.length">
+    Confirmar Pedido
+  </button>
+</div>

@@ -1,0 +1,33 @@
+
+#%RAML 1.0
+title: Servicio de Banco / Pasarela de Pago
+version: v1
+baseUri: /banco
+
+types:
+  Payment:
+    type: object
+    properties:
+      cardNumber: string
+      amount: number
+    example:
+      cardNumber: "1234567890123456"
+      amount: 99.99
+
+/pago:
+  post:
+    description: Validar y procesar un pago
+    body:
+      application/json:
+        type: Payment
+    responses:
+      200:
+        description: Pago aceptado
+        body:
+          application/json:
+            example: { status: "approved", message: "Pago procesado" }
+      400:
+        description: Pago rechazado
+        body:
+          application/json:
+            example: { status: "rejected", message: "Tarjeta no válida" }

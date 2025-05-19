@@ -1,0 +1,44 @@
+<header class="app-header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <a routerLink="/" class="logo-link">
+        <img src="assets/images/logo.png" alt="Logo MiTienda" class="logo-image" />
+      </a>
+
+      <!-- Botón Catálogo -->
+      <a routerLink="/catalog" routerLinkActive="active-link" class="catalog-button">
+        <i class="fas fa-store"></i>
+        Catálogo
+      </a>
+    </div>
+
+    <!-- Acciones a la derecha -->
+    <div class="header-actions">
+      <!-- Carrito -->
+      <a routerLink="/cart" class="icon-button cart-icon" aria-label="Carrito">
+        <i class="fas fa-shopping-cart"></i>
+        <span *ngIf="(cartItemCount$ | async) as count" class="cart-badge" [class.has-items]="count > 0">
+          {{ count > 0 ? count : '' }}
+        </span>
+      </a>
+
+      <!-- Usuario -->
+      <ng-container *ngIf="(isLoggedIn$ | async); else loginLink">
+        <div class="user-dropdown" (click)="toggleDropdown()" tabindex="0">
+          <i class="fas fa-user-circle profile-icon"></i>
+          <span class="username">{{ userEmail }}</span>
+          <div class="dropdown-menu" *ngIf="showDropdown">
+            <button (click)="logout()">Cerrar sesión</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #loginLink>
+        <a routerLink="/login" class="icon-button" aria-label="Iniciar sesión">
+          <i class="fas fa-user-circle"></i>
+        </a>
+      </ng-template>
+    </div>
+  </div>
+</header>

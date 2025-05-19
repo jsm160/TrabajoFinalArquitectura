@@ -1,22 +1,26 @@
-// src/app/app.config.ts
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig} from '@angular/core';
 import { provideRouter, withComponentInputBinding, withPreloading, PreloadAllModules } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Descomenta si necesitas animaciones
-
-// Importa tus interceptores si los tienes (ej. para tokens)
-// import { tokenInterceptor } from './core/interceptors/token.interceptor';
-
+import { provideHttpClient, withInterceptors} from '@angular/common/http';
 import { routes } from './app.routes';
+import { tokenInterceptor } from './core/interceptors/token.interceptor';
+
+export const environment = {
+  production: false,
+  apiAuth: 'http://localhost:3003/api/auth',
+  apiCatalogo: 'http://localhost:3002/api/products',
+  apiBanco: 'http://localhost:3001/api/banco',
+  apiPedidos: 'http://localhost:3004/api/pedidos',
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes,
-      withComponentInputBinding(), // Permite bindear parámetros de ruta a inputs de componentes
-      withPreloading(PreloadAllModules) // Carga perezosa de módulos en segundo plano
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withPreloading(PreloadAllModules)
     ),
     provideHttpClient(
-      // withInterceptors([tokenInterceptor]) // Descomenta y añade tus interceptores
+       withInterceptors([tokenInterceptor])
     ),
   ]
 };

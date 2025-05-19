@@ -1,21 +1,21 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+require('./config/db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3004;
 
 app.use(cors());
 app.use(express.json());
 
-const orderRoutes = require('./routes/order.routes');
-app.use('/api/orders', orderRoutes);
+const verifyToken = require('./middleware/auth.middleware');
+app.use(verifyToken);
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/pedidos', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Conectado a MongoDB - pedidos');
-    app.listen(PORT, () => console.log(`Servidor Pedido en puerto ${PORT}`));
-}).catch(err => console.error(err));
+// Rutas
+const pedidoRoutes = require('./routes/order.routes');
+app.use('/api/pedidos', pedidoRoutes);
+
+app.listen(PORT, () => {
+  console.log(`🟢 Servicio Pedido escuchando en el puerto ${PORT}`);
+});

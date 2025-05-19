@@ -1,0 +1,48 @@
+
+#%RAML 1.0
+title: Servicio de Catálogo de Productos
+version: v1
+baseUri: /catalogo
+
+types:
+  Product:
+    type: object
+    properties:
+      name: string
+      description: string
+      price: number
+      stock: number
+    example:
+      name: "Microondas Cecotec"
+      description: "Microondas con grill 20L"
+      price: 99.99
+      stock: 8
+
+/productos:
+  get:
+    description: Obtener todos los productos
+    responses:
+      200:
+        body:
+          application/json:
+            type: Product[]
+            example: [
+              {
+                name: "TV LG 4K",
+                description: "Smart TV 50 pulgadas",
+                price: 399.99,
+                stock: 12
+              }
+            ]
+
+  post:
+    description: Crear un nuevo producto
+    body:
+      application/json:
+        type: Product
+    responses:
+      201:
+        description: Producto creado
+        body:
+          application/json:
+            example: { message: "Producto añadido correctamente" }
