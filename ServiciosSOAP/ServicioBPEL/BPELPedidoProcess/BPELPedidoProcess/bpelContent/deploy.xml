@@ -1,0 +1,24 @@
+<deploy xmlns="http://www.apache.org/ode/schemas/dd/2007/03"
+        xmlns:tns="http://localhost/bpel/ProyectoBPELPedido"
+        xmlns:prov="http://control.provider.org"
+        xmlns:stock="http://control.stock.org">
+
+  <process name="tns:ProyectoBPELPedido">
+    <active>true</active>
+    <retired>false</retired>
+    <process-events generate="all"/>
+
+    <provide partnerLink="client">
+      <service name="tns:ProyectoBPELPedido" port="ProyectoBPELPedidoPort"/>
+    </provide>
+
+    <invoke partnerLink="StockPartner">
+      <service name="stock:StockServiceHandler" port="StockServiceHandlerHttpSoap11Endpoint"/>
+    </invoke>
+
+    <invoke partnerLink="ProvidePartner">
+      <service name="prov:ProviderServiceHandler" port="ProviderServiceHandlerHttpSoap11Endpoint"/>
+    </invoke>
+
+  </process>
+</deploy>
