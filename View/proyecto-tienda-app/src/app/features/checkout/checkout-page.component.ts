@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; 
+import { ProviderApiService } from '../../services-integration/soap/services/provider-api.service';
+import { StockApiService } from '../../services-integration/soap/services/stock-api.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -29,12 +31,16 @@ export class CheckoutPageComponent implements OnInit {
   numeroTarjeta: string = '';
 
   isLoading: boolean = false;
+  errorMessage: string | undefined;
 
   constructor(
     private cartService: CartService,
     private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar 
+    private snackBar: MatSnackBar ,
+     private stockService: StockApiService,
+    private providerService: ProviderApiService
+
   ) { }
 
   ngOnInit(): void {
@@ -55,7 +61,7 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
-  confirmPurchase(): void {
+  async confirmPurchase(): Promise<void> {
    
     this.isLoading = true;
 
@@ -78,6 +84,42 @@ export class CheckoutPageComponent implements OnInit {
     };
 
     console.log('💳 Enviando solicitud de pago al banco:', paymentPayload);
+
+    for (const item of this.cartItems) {
+      const { product } = item;
+      const productId = product.productId;
+      console.log('🧪 Product ID:', productId);
+
+      try {
+        const stockResponse = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+
+        if (!stockResponse || !stockResponse.available) {
+          const restockResponse = await this.providerService.makeRestockOrder(productId, item.quantity, 1).toPromise();
+
+          if (!restockResponse || !restockResponse.success) {
+            this.errorMessage = `❌ No hay stock y no se pudo reabastecer el producto "${product.name}".`;
+            return;
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 2000));
+
+          const newCheck = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+          if (!newCheck || !newCheck.available) {
+            this.errorMessage = `❌ El proveedor aceptó, pero aún no hay stock de "${product.name}".`;
+            return;
+          }
+        }
+
+        // ✅ Aquí restas el stock en MySQL (vía SOAP)
+        await this.stockService.decreaseStock(productId, item.quantity).toPromise();
+        console.log(`✅ Stock actualizado para "${product.name}"`);
+
+      } catch (err) {
+        console.error(`Error al verificar o reabastecer "${product.name}":`, err);
+        this.errorMessage = `Error técnico con el producto "${product.name}".`;
+        return;
+      }
+    }
 
     this.http.post('http://localhost:3001/api/payments', paymentPayload).subscribe({
       next: (paymentResponse: any) => {

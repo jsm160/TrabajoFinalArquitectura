@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -40,4 +40,17 @@ export class StockApiService {
       quantity
     });
   }
+
+  getStock(productId: number) {
+  const token = localStorage.getItem('authToken');
+
+  const headers = new HttpHeaders(
+    token ? { Authorization: `Bearer ${token}` } : {}
+  );
+
+  return this.http.get<{ stock: number }>(
+    `http://localhost:3000/api/stock/product/${productId}`,
+    { headers }
+  );
+}
 }

@@ -1,4 +1,5 @@
 const soap = require('strong-soap').soap;
+const db = require('../config/db');
 
 // URL de tu servicio SOAP de stock
 const WSDL_URL = 'http://localhost:9080/StockService/services/StockServiceHandler?wsdl';
@@ -42,8 +43,14 @@ function increaseStock(productId, quantity) {
   });
 }
 
+async function getStock(productId) {
+  const [rows] = await db.query('SELECT quantity FROM product_stock WHERE product_id = ?', [productId]);
+  return rows.length > 0 ? rows[0].quantity : null;
+}
+
 module.exports = {
   verifyAvailability,
   decreaseStock,
-  increaseStock
+  increaseStock,
+  getStock
 };

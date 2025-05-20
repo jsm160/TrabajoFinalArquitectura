@@ -41,6 +41,18 @@ app.post('/api/stock/increase', async (req, res) => {
   }
 });
 
+app.get('/api/stock/product/:productId', async (req, res) => {
+  const productId = req.params.productId;
+  try {
+    const stock = await stockService.getStock(productId);
+    if (stock === null) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json({ stock });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 // ----- ENDPOINTS DE PROVIDER -----
 
 app.post('/api/provider/check-price', async (req, res) => {

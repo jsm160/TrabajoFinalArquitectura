@@ -8,6 +8,10 @@
   <div class="catalog-filters">
     <input type="text" placeholder="🔍 Buscar producto..." (input)="handleSearchInput($event)">
     <input type="number" placeholder="Precio máx." (input)="handleMaxPriceInput($event)">
+    <!-- Botón de Reabastecer -->
+    <button (click)="restockAll()" class="restock-button">
+      <i class="fas fa-sync-alt"></i> Reabastecer (+1)
+    </button>
   </div>
 
   <div *ngIf="isLoading" class="catalog-loading">
@@ -19,6 +23,7 @@
       <app-product-card
         *ngFor="let product of products; trackBy: trackByProductId"
         [product]="product"
+        [realStock]="productStock[product.productId]"
         (addToCart)="onAddToCart($event)">
       </app-product-card>
     </div>

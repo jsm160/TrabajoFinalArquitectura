@@ -6,6 +6,8 @@ import { CatalogService } from './catalog.service';
 import { ProductCardComponent } from './product-card/product-card.component';
 import { CartService } from '../cart/cart.service';
 import { FormsModule } from '@angular/forms';
+import { take } from 'rxjs/operators';
+import { StockApiService } from '../../services-integration/soap/services/stock-api.service'; // ✅ Asegúrate de importar
 
 @Component({
   selector: 'app-catalog-page',
@@ -23,6 +25,8 @@ export class CatalogPageComponent implements OnInit {
   filteredProducts$!: Observable<Product[]>;
   isLoading = true;
 
+  productStock: Record<number, number> = {}; // ✅ Nuevo: stock real por productId
+
   search$ = new BehaviorSubject<string>('');
   category$ = new BehaviorSubject<string>('all');
   maxPrice$ = new BehaviorSubject<number | null>(null);
@@ -31,6 +35,7 @@ export class CatalogPageComponent implements OnInit {
 
   private catalogService = inject(CatalogService);
   private cartService = inject(CartService);
+  private stockService = inject(StockApiService); // ✅ Nuevo servicio
 
   ngOnInit(): void {
     this.loadProducts();
@@ -41,6 +46,24 @@ export class CatalogPageComponent implements OnInit {
       startWith([]),
       map(products => {
         this.categories = [...new Set(products.map(p => p.category).filter((c): c is string => typeof c === 'string'))];
+
+        // ✅ Cargar stock real desde backend para cada producto
+        for (const product of products) {
+          if (product.productId !== undefined) {
+            this.stockService.getStock(product.productId).subscribe({
+              next: (res) => {
+                console.log(`📦 Stock recibido para ID ${product.productId}:`, res.stock);
+                this.productStock[product.productId] = res.stock;
+              },
+              error: (err) => {
+                console.warn(`❌ Error al obtener stock para ID ${product.productId}`, err);
+                this.productStock[product.productId] = 0;
+              }
+            });
+
+          }
+        }
+
         return products;
       })
     );
@@ -99,4 +122,39 @@ export class CatalogPageComponent implements OnInit {
     const value = input.value;
     this.onMaxPriceChange(value ? Number(value) : null);
   }
+
+restockAll(): void {
+  console.log('🛠 Reabasteciendo productos visibles...');
+
+  this.filteredProducts$.pipe(take(1)).subscribe(products => {
+    console.log('📦 Productos recibidos para reabastecer:', products);
+
+    if (!products || products.length === 0) {
+      console.warn('❗ No hay productos para reabastecer');
+      return;
+    }
+
+    const restockCalls = products.map(product => {
+      const productId = product.productId;
+      if (productId !== undefined) {
+        console.log(`➡️ Reabasteciendo ${product.name} con ID ${productId}`);
+        return this.stockService.increaseStock(productId, 1).toPromise()
+          .then(() => console.log(`✅ Stock aumentado para ${product.name}`))
+          .catch(err => console.error(`❌ Error al reabastecer ${product.name}:`, err));
+      } else {
+        console.warn(`⛔ Producto sin productId:`, product);
+        return Promise.resolve();
+      }
+    });
+
+    Promise.all(restockCalls).then(() => {
+      console.log('🔄 Reabastecimiento completo. Recargando productos...');
+      this.loadProducts(); // actualiza el stock
+    });
+  });
+}
+
+
+
+
 }

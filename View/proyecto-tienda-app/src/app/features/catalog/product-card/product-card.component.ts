@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 })
 export class ProductCardComponent {
   @Input() product!: Product;
+  @Input() realStock: number | undefined;
   @Output() addToCart = new EventEmitter<Product>();
 
   onAddToCart(): void {
@@ -19,11 +20,10 @@ export class ProductCardComponent {
   }
 
   hasStock(): boolean {
-    return this.product?.stock !== undefined && this.product.stock > 0;
+    return this.realStock !== undefined && this.realStock > 0;
   }
 
   isLowStock(): boolean {
-    return this.product?.stock !== undefined && this.product.stock <= 5 && this.product.stock > 0;
+    return this.realStock !== undefined && this.realStock <= 5 && this.realStock > 0;
   }
-
 }
