@@ -1,33 +1,69 @@
-
 #%RAML 1.0
 title: Servicio de Banco / Pasarela de Pago
 version: v1
-baseUri: /banco
+baseUri: /api/payments 
 
 types:
-  Payment:
+  PaymentRequest:
     type: object
     properties:
-      cardNumber: string
-      amount: number
-    example:
-      cardNumber: "1234567890123456"
-      amount: 99.99
+      cardNumber:
+        type: string
+        pattern: '^\d{4}$' 
+        example: "1234"    
+        description: Número de la tarjeta (4 dígitos)
+      cardHolderName:
+        type: string
+        example: "Carlos Ruiz"
+        description: Nombre del titular de la tarjeta
+      amount:
+        type: number
+        format: float 
+        minimum: 0.01 
+        example: 849.99
 
-/pago:
+/v1/process: 
+  
   post:
     description: Validar y procesar un pago
     body:
       application/json:
-        type: Payment
+        type: PaymentRequest 
     responses:
       200:
         description: Pago aceptado
         body:
           application/json:
-            example: { status: "approved", message: "Pago procesado" }
+            example: { success: true } 
       400:
-        description: Pago rechazado
+        description: Petición inválida o saldo insuficiente
         body:
           application/json:
-            example: { status: "rejected", message: "Tarjeta no válida" }
+            type: object
+            properties:
+              message: string
+            examples: 
+              invalidData:
+                message: "Datos de petición inválidos: cardNumber, cardHolderName y amount son requeridos."
+              invalidCardNumber:
+                message: "Datos de petición inválidos: cardNumber debe ser un string de 4 dígitos."
+              amountInvalid:
+                message: "Datos de petición inválidos: amount debe ser un número mayor que 0.01."
+              accountNotFound:
+                message: "Cuenta no encontrada."
+              cardHolderMismatch:
+                message: "Datos de petición inválidos: Nombre del titular de la tarjeta no coincide."
+              insufficientFunds:
+                message: "Saldo insuficiente."
+      500: 
+        description: Error interno del servidor
+        body:
+          application/json:
+            type: object
+            properties:
+              message: string
+            examples:
+              simulatedError:
+                message: "Fallo al procesar el pago (error interno simulado)."
+              internalServerError:
+                message: "Fallo al procesar el pago (error interno del servidor)."

@@ -1,66 +1,222 @@
-
 #%RAML 1.0
 title: Servicio de Pedidos
 version: v1
-baseUri: /pedido
+baseUri: /api/pedidos 
+
+securitySchemes:
+  bearerAuth:
+    type: OAuth2
+    description: Token de autenticación JWT
+    settings:
+      authorizationGrants: [ implicit ]
+      accessTokenUri: /api/auth/login 
+      scopes: [ 'read', 'write' ] 
 
 types:
-  OrderItem:
+  # Tipo para la estructura de los ítems que se ENVIAN en la petición de creación
+  ProductRequestItem:
     type: object
     properties:
-      productId: string
-      quantity: number
+      productId:
+        type: string
+        description: ID del producto del catálogo
+      quantity:
+        type: number
+        minimum: 1
+        description: Cantidad del producto
     example:
-      productId: "abc123"
+      productId: "60c72b2f9c9b1f001c8e4d6a"
       quantity: 2
 
-  Order:
+  # Tipo para la estructura de los ítems que se GUARDAN/RECIBEN en la respuesta del pedido
+  OrderItemResponse:
     type: object
     properties:
-      customerName: string
-      products: OrderItem[]
+      productName: string
+      unitPrice: number
+      quantity: number
       total: number
-      status: string
-      createdAt: datetime
     example:
-      customerName: "Carlos Pérez"
-      products: [
-        { productId: "p1", quantity: 1 },
-        { productId: "p2", quantity: 2 }
-      ]
-      total: 149.98
-      status: "pendiente"
-      createdAt: "2024-04-01T10:00:00Z"
+      productName: "TV LG 4K"
+      unitPrice: 399.99
+      quantity: 1
+      total: 399.99
 
-/pedidos:
+  # Tipo para la estructura COMPLETA de un Pedido tal como se almacena y devuelve
+  OrderResponse:
+    type: object
+    properties:
+      _id?: string
+      userEmail: string 
+      items: OrderItemResponse[] 
+      totalPrice: number 
+      status: string 
+      createdAt?: datetime
+      __v?: number 
+    example:
+      _id: "60c72b2f9c9b1f001c8e4d6b"
+      userEmail: "luis@demo.com"
+      items:
+        - productName: "TV LG 4K"
+          unitPrice: 399.99
+          quantity: 1
+          total: 399.99
+        - productName: "Lavadora Samsung"
+          unitPrice: 349.99
+          quantity: 2
+          total: 699.98
+      totalPrice: 1099.97
+      status: "completo"
+      createdAt: "2025-05-20T09:12:58.342Z"
+
+  # Tipo para la estructura de la PETICIÓN de creación de Pedido (lo que Angular envía)
+  CreateOrderRequest:
+    type: object
+    properties:
+      customerName: string 
+      products: ProductRequestItem[] 
+    example:
+      customerName: "luis@demo.com"
+      products:
+        - productId: "60c72b2f9c9b1f001c8e4d6a"
+          quantity: 1
+        - productId: "60c72b2f9c9b1f001c8e4d6b"
+          quantity: 2
+
+/:
   get:
-    description: Obtener todos los pedidos
+    description: Obtener todos los pedidos. Requiere autenticación.
+    securedBy: [ bearerAuth ]
     responses:
       200:
         body:
           application/json:
-            type: Order[]
+            type: OrderResponse[]
             example: [
               {
-                customerName: "Carlos Pérez",
-                products: [
-                  { productId: "p1", quantity: 1 },
-                  { productId: "p2", quantity: 2 }
-                ],
-                total: 149.98,
-                status: "pendiente",
-                createdAt: "2024-04-01T10:00:00Z"
+                _id: "60c72b2f9c9b1f001c8e4d6b",
+                userEmail: "luis@demo.com",
+                items: [ { productName: "TV LG 4K", unitPrice: 399.99, quantity: 1, total: 399.99 } ],
+                totalPrice: 399.99,
+                status: "completo",
+                createdAt: "2025-05-20T09:12:58.342Z"
               }
             ]
-
-  post:
-    description: Crear un nuevo pedido
-    body:
-      application/json:
-        type: Order
-    responses:
-      201:
-        description: Pedido creado correctamente
+      500:
+        description: Error al obtener pedidos
         body:
           application/json:
-            example: { message: "Pedido creado", orderId: "abc123" }
+            example: { message: 'Error al obtener pedidos' }
+
+  post:
+    description: Crear un nuevo pedido. Requiere autenticación.
+    securedBy: [ bearerAuth ]
+    body:
+      application/json:
+        type: CreateOrderRequest 
+    responses:
+      201:
+        description: Pedido registrado correctamente
+        body:
+          application/json:
+            type: object
+            properties:
+              message: string
+              order: OrderResponse 
+              productosFaltantes: array 
+            example:
+              message: "Pedido registrado correctamente"
+              order:
+                _id: "60c72b2f9c9b1f001c8e4d6c"
+                userEmail: "luis@demo.com"
+                items:
+                  - productName: "TV LG 4K"
+                    unitPrice: 399.99
+                    quantity: 1
+                    total: 399.99
+                totalPrice: 399.99
+                status: "completo"
+                createdAt: "2025-05-20T09:12:58.342Z"
+              productosFaltantes: [] 
+
+      400: 
+        description: Datos incompletos para crear el pedido.
+        body:
+          application/json:
+            example: { message: 'Datos incompletos para crear el pedido.' }
+      500:
+        description: Error al crear el pedido
+        body:
+          application/json:
+            example: { message: 'Error al crear el pedido (interno del servidor).' }
+
+  /{id}:
+    uriParameters:
+      id:
+        type: string
+        description: ID del pedido
+
+    get:
+      description: Obtener un pedido por ID.
+      responses:
+        200:
+          body:
+            application/json:
+              type: OrderResponse
+              example: { _id: "60c72b2f9c9b1f001c8e4d6b", userEmail: "luis@demo.com", totalPrice: 1099.97, status: "completo", items: [], createdAt: "2025-05-20T09:12:58.342Z" }
+        404:
+          description: Pedido no encontrado
+          body:
+            application/json:
+              example: { message: 'Pedido no encontrado' }
+        500:
+          description: Error al buscar el pedido
+          body:
+            application/json:
+              example: { message: 'Error al buscar el pedido.' }
+
+    delete:
+      description: Eliminar un pedido por ID. Requiere autenticación.
+      securedBy: [ bearerAuth ]
+      responses:
+        204:
+          description: Pedido eliminado (no content)
+        404:
+          description: Pedido no encontrado
+          body:
+            application/json:
+              example: { message: 'Pedido no encontrado' }
+        500:
+          description: Error al eliminar el pedido
+          body:
+            application/json:
+              example: { message: 'Error al eliminar el pedido.' }
+
+  /user/{customerName}:
+    uriParameters:
+      customerName:
+        type: string
+        description: Email del usuario
+    get:
+      description: Obtener pedidos de un usuario específico. Requiere autenticación.
+      securedBy: [ bearerAuth ]
+      responses:
+        200:
+          body:
+            application/json:
+              type: OrderResponse[]
+              example: [
+                {
+                  _id: "60c72b2f9c9b1f001c8e4d6b",
+                  userEmail: "luis@demo.com",
+                  items: [ { productName: "TV LG 4K", unitPrice: 399.99, quantity: 1, total: 399.99 } ],
+                  totalPrice: 399.99,
+                  status: "completo",
+                  createdAt: "2025-05-20T09:12:58.342Z"
+                }
+              ]
+        500:
+          description: Error al obtener pedidos del usuario
+          body:
+            application/json:
+              example: { message: 'Error al obtener pedidos del usuario.' }

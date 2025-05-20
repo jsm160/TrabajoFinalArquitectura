@@ -1,24 +1,40 @@
-
 #%RAML 1.0
 title: Servicio de Catálogo de Productos
 version: v1
-baseUri: /catalogo
+baseUri: /api/products 
+
+securitySchemes:
+  bearerAuth:
+    type: OAuth2
+    description: Token de autenticación JWT
+    settings:
+      authorizationGrants: [ implicit ]
+      accessTokenUri: /api/auth/login 
+      scopes: [ 'read', 'write' ] 
 
 types:
   Product:
     type: object
     properties:
-      name: string
+      _id?: string
+      name:
+        type: string
+        required: true 
       description: string
-      price: number
-      stock: number
+      price:
+        type: number
+        required: true 
+      stock:
+        type: number
+        default: 0 
     example:
+      _id: "60c72b2f9c9b1f001c8e4d6a" 
       name: "Microondas Cecotec"
       description: "Microondas con grill 20L"
       price: 99.99
       stock: 8
 
-/productos:
+/:
   get:
     description: Obtener todos los productos
     responses:
@@ -28,21 +44,113 @@ types:
             type: Product[]
             example: [
               {
+                _id: "60c72b2f9c9b1f001c8e4d6a",
                 name: "TV LG 4K",
                 description: "Smart TV 50 pulgadas",
                 price: 399.99,
                 stock: 12
               }
             ]
+      500: 
+        description: Error al obtener productos
+        body:
+          application/json:
+            example: { error: 'Error al obtener productos' }
 
   post:
     description: Crear un nuevo producto
+    securedBy: [ bearerAuth ]
     body:
       application/json:
-        type: Product
+        type: object
+        properties:
+          name: { type: string, required: true }
+          description: string
+          price: { type: number, required: true }
+          stock: { type: number, default: 0 }
+        example:
+          name: "Nuevo Producto"
+          description: "Descripción del nuevo producto"
+          price: 150.00
+          stock: 20
     responses:
       201:
         description: Producto creado
         body:
           application/json:
-            example: { message: "Producto añadido correctamente" }
+            type: Product 
+            example: 
+              _id: "60c72b2f9c9b1f001c8e4d6b"
+              name: "Nuevo Producto"
+              description: "Descripción del nuevo producto"
+              price: 150.00
+              stock: 20
+      500: 
+        description: Error al crear el producto
+        body:
+          application/json:
+            example: { error: 'Error al crear el producto' }
+
+  /{id}: 
+    uriParameters:
+      id:
+        type: string
+        description: ID del producto
+
+    get:
+      description: Obtener un producto por ID
+      responses:
+        200:
+          body:
+            application/json:
+              type: Product
+              example: { _id: "60c72b2f9c9b1f001c8e4d6a", name: "TV LG 4K", description: "Smart TV 50 pulgadas", price: 399.99, stock: 12 }
+        404:
+          description: Producto no encontrado
+          body:
+            application/json:
+              example: { error: 'Producto no encontrado' }
+        500:
+          description: Error al obtener el producto
+          body:
+            application/json:
+              example: { error: 'Error al obtener el producto' }
+
+    put:
+      description: Actualizar un producto por ID
+      securedBy: [ bearerAuth ]
+      body:
+        application/json:
+          type: object
+          properties: 
+            name?: string
+            description?: string
+            price?: number
+            stock?: number
+          example:
+            name: "TV LG 4K Pro"
+            price: 450.00
+      responses:
+        200:
+          description: Producto actualizado
+          body:
+            application/json:
+              type: Product
+              example: { _id: "60c72b2f9c9b1f001c8e4d6a", name: "TV LG 4K Pro", description: "Smart TV 50 pulgadas", price: 450.00, stock: 12 }
+        500:
+          description: Error al actualizar el producto
+          body:
+            application/json:
+              example: { error: 'Error al actualizar el producto' }
+
+    delete:
+      description: Eliminar un producto por ID
+      securedBy: [ bearerAuth ]
+      responses:
+        204:
+          description: Producto eliminado (no content)
+        500:
+          description: Error al eliminar el producto
+          body:
+            application/json:
+              example: { error: 'Error al eliminar el producto' }
