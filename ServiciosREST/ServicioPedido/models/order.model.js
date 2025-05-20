@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },
   status: { type: String, default: 'pendiente' },
   createdAt: { type: Date, default: Date.now },
-  products: { type: Array, default: [] } 
+  //products: { type: Array, default: [] } 
 });
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -1,10 +1,8 @@
 <div class="checkout-container">
   <h2>Resumen del Pedido</h2>
 
-  <!-- Mostrar correo del usuario -->
   <p><strong>Cliente:</strong> {{ userEmail }}</p>
 
-  <!-- Lista de productos -->
   <table class="checkout-table" *ngIf="cartItems.length > 0">
     <thead>
       <tr>
@@ -24,12 +22,10 @@
     </tbody>
   </table>
 
-  <!-- Total -->
   <div class="checkout-total">
     <p><strong>Total:</strong> {{ totalPrice | currency: 'USD' }}</p>
   </div>
 
-  <!-- Datos de pago -->
   <div class="payment-section">
     <h3>Datos de Pago</h3>
 
@@ -46,16 +42,14 @@
     </div>
 
     <div class="form-group">
-      <label for="numeroTarjeta">Número de Tarjeta</label>
+      <label for="numeroTarjeta">Número de Tarjeta (4 dígitos)</label>
       <input
         type="text"
         id="numeroTarjeta"
         [(ngModel)]="numeroTarjeta"
         name="numeroTarjeta"
-        maxlength="19"
-        placeholder="**** **** **** ****"
-        required
-      />
+        maxlength="4"                              placeholder="Ej: 1234"                     required
+        pattern="[0-9]{4}"                         title="Solo se aceptan 4 dígitos numéricos." />
     </div>
 
     <div class="form-group">
@@ -69,20 +63,9 @@
     </div>
   </div>
 
-  <!-- Mensajes -->
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="successMessage" class="success-message">
-    {{ successMessage }}
-  </div>
-
-  <!-- Confirmar compra -->
   <button
     (click)="confirmPurchase()"
-    [disabled]="!nombreTitular || !numeroTarjeta || !cartItems.length"
-  >
-    Confirmar Pedido
-  </button>
+    [disabled]="!nombreTitular || !numeroTarjeta || !cartItems.length || isLoading" >
+    <span *ngIf="!isLoading">Confirmar Pedido</span>
+    <span *ngIf="isLoading">Procesando pago...</span> </button>
 </div>

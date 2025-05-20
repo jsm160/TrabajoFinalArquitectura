@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { RegisterPageComponent } from './features/register/register-page.component';
-// import { authGuard } from './core/guards/auth.guard'; // Descomenta si implementas guardas
 
 export const routes: Routes = [
   {
@@ -14,16 +13,10 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadChildren: () => import('./features/cart/cart.routes').then(r => r.CART_ROUTES),
-    // canActivate: [authGuard] // Para proteger esta ruta
   },
   {
     path: 'checkout',
     loadChildren: () => import('./features/checkout/checkout.routes').then(r => r.CHECKOUT_ROUTES),
-    // canActivate: [authGuard] // Para proteger esta ruta
-  },
-  {
-    path: 'payment-result',
-    loadChildren: () => import('./features/payment-result/payment-result.routes').then(r => r.PAYMENT_RESULT_ROUTES)
   },
   {
     path: 'pedidos',

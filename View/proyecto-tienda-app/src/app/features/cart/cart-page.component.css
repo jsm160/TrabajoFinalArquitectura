@@ -1,11 +1,22 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+
 .cart-page-container {
-  max-width: 960px;
+  width: 100%;
   margin: 2rem auto;
   padding: 2rem;
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   font-family: 'Segoe UI', sans-serif;
+
+  padding-top: 6rem;
 }
 
 .cart-header {

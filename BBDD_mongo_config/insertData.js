@@ -16,12 +16,6 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 
-const accountSchema = new mongoose.Schema({
-  cardNumber: String,
-  cardHolderName: String,
-  balance: Number
-});
-
 const orderSchema = new mongoose.Schema({
   userEmail: String,
   items: [{
@@ -33,6 +27,27 @@ const orderSchema = new mongoose.Schema({
   totalPrice: Number,
   createdAt: { type: Date, default: Date.now }
 });
+
+
+const accountSchema = new mongoose.Schema({
+  cardNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 4,
+    maxlength: 4,
+    match: /^\d{4}$/
+  },
+  cardHolderName: {
+    type: String,
+    required: true
+  },
+  balance: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+}, { timestamps: true });
 
 // Modelos
 const Product = mongoose.model('Product', productSchema, 'products');
@@ -64,22 +79,25 @@ const run = async () => {
 
   // Insertar usuarios
   await User.insertMany([
-    { email: 'admin@demo.com', password: '123456' },
-    { email: 'cliente1@demo.com', password: 'abcdef' },
-    { email: 'cliente2@demo.com', password: 'qwerty' }
+    { email: 'pedro@demo.com', password: '123456' },
+    { email: 'maria@demo.com', password: '123456' },
+    { email: 'laura@demo.com', password: '123456' }
   ]);
 
   // Insertar cuentas bancarias
   await Account.insertMany([
     { cardNumber: '1111', cardHolderName: 'Juan Perez', balance: 1000.00 },
-    { cardNumber: '2222', cardHolderName: 'Laura Gómez', balance: 1500.00 },
-    { cardNumber: '3333', cardHolderName: 'Carlos Ruiz', balance: 500.00 }
+    { cardNumber: '2222', cardHolderName: 'Laura Gomez', balance: 1500.00 },
+    { cardNumber: '3333', cardHolderName: 'Carlos Ruiz', balance: 500.00 },
+    { cardNumber: '4444', cardHolderName: 'Maria Lopez', balance: 25.00 }, // ** Para probar saldo insuficiente
+    { cardNumber: '5555', cardHolderName: 'Pedro Perez', balance: 0.00 }, // ** Para probar saldo cero
+    { cardNumber: '9999', cardHolderName: 'Tarjeta Error', balance: 100.00 } // ** Para probar el error simulado del 500 si termina en 0
   ]);
 
   // Insertar pedidos
   await Order.insertMany([
     {
-      userEmail: 'admin@demo.com',
+      userEmail: 'pedro@demo.com',
       items: [
         { productName: 'TV LG 4K', unitPrice: 399.99, quantity: 1, total: 399.99 },
         { productName: 'Lavadora Samsung', unitPrice: 349.99, quantity: 2, total: 699.98 }
@@ -87,7 +105,7 @@ const run = async () => {
       totalPrice: 1099.97
     },
     {
-      userEmail: 'cliente1@demo.com',
+      userEmail: 'maria@demo.com',
       items: [
         { productName: 'Frigorífico Balay', unitPrice: 699.00, quantity: 1, total: 699.00 },
         { productName: 'Microondas Cecotec', unitPrice: 99.99, quantity: 1, total: 99.99 },
@@ -96,7 +114,7 @@ const run = async () => {
       totalPrice: 978.98
     },
     {
-      userEmail: 'cliente2@demo.com',
+      userEmail: 'laura@demo.com',
       items: [
         { productName: 'Robot aspirador Roomba', unitPrice: 249.99, quantity: 1, total: 249.99 },
         { productName: 'Placa inducción Bosch', unitPrice: 429.00, quantity: 1, total: 429.00 }
