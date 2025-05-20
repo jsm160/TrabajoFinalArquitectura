@@ -32,6 +32,7 @@ export class CheckoutPageComponent implements OnInit {
 
   isLoading: boolean = false;
   errorMessage: string | undefined;
+  mensaje: string | undefined;
 
   constructor(
     private cartService: CartService,
@@ -91,19 +92,24 @@ export class CheckoutPageComponent implements OnInit {
       console.log('🧪 Product ID:', productId);
 
       try {
-        const stockResponse = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
 
+        console.log('Product Ctd:', item.quantity);
+        const stockResponse = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+      console.log('stockResponse:', stockResponse);
         if (!stockResponse || !stockResponse.available) {
-          const restockResponse = await this.providerService.makeRestockOrder(productId, item.quantity, 1).toPromise();
+          const restockResponse = await this.providerService.makeRestockOrder(productId, item.quantity, 2).toPromise();
+        
 
           if (!restockResponse || !restockResponse.success) {
             this.errorMessage = `❌ No hay stock y no se pudo reabastecer el producto "${product.name}".`;
             return;
           }
+          this.showSnackbar('No hay stock, reabasteciendo...', 'Cerrar', 'success-snackbar');
 
           await new Promise(resolve => setTimeout(resolve, 2000));
-
+          this.showSnackbar('Producto reabastecido.', 'Cerrar', 'success-snackbar');
           const newCheck = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+
           if (!newCheck || !newCheck.available) {
             this.errorMessage = `❌ El proveedor aceptó, pero aún no hay stock de "${product.name}".`;
             return;

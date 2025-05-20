@@ -123,36 +123,7 @@ export class CatalogPageComponent implements OnInit {
     this.onMaxPriceChange(value ? Number(value) : null);
   }
 
-restockAll(): void {
-  console.log('🛠 Reabasteciendo productos visibles...');
 
-  this.filteredProducts$.pipe(take(1)).subscribe(products => {
-    console.log('📦 Productos recibidos para reabastecer:', products);
-
-    if (!products || products.length === 0) {
-      console.warn('❗ No hay productos para reabastecer');
-      return;
-    }
-
-    const restockCalls = products.map(product => {
-      const productId = product.productId;
-      if (productId !== undefined) {
-        console.log(`➡️ Reabasteciendo ${product.name} con ID ${productId}`);
-        return this.stockService.increaseStock(productId, 1).toPromise()
-          .then(() => console.log(`✅ Stock aumentado para ${product.name}`))
-          .catch(err => console.error(`❌ Error al reabastecer ${product.name}:`, err));
-      } else {
-        console.warn(`⛔ Producto sin productId:`, product);
-        return Promise.resolve();
-      }
-    });
-
-    Promise.all(restockCalls).then(() => {
-      console.log('🔄 Reabastecimiento completo. Recargando productos...');
-      this.loadProducts(); // actualiza el stock
-    });
-  });
-}
 
 
 

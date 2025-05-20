@@ -22,6 +22,8 @@
         <i class="fas" [ngClass]="hasStock() ? 'fa-cart-plus' : 'fa-ban'"></i>
         {{ hasStock() ? 'Añadir' : 'Agotado' }}
       </button>
+      
+
     </div>
 
     <p *ngIf="isLowStock()" class="stock-warning">
