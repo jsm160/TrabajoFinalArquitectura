@@ -6,6 +6,11 @@ import { CartItem } from '../cart/cart.interface';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { FormsModule } from '@angular/forms';
+import { ProviderApiService } from '../../services-integration/soap/services/provider-api.service';
+import { StockApiService } from '../../services-integration/soap/services/stock-api.service';
+
+
+
 
 @Component({
   selector: 'app-checkout-page',
@@ -29,7 +34,9 @@ export class CheckoutPageComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private stockService: StockApiService,
+    private providerService: ProviderApiService
   ) { }
 
   ngOnInit(): void {
@@ -52,42 +59,77 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
-  confirmPurchase(): void {
-    this.errorMessage = '';
-    this.successMessage = '';
+ async confirmPurchase(): Promise<void> {
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    if (!this.nombreTitular || !this.numeroTarjeta || this.cartItems.length === 0) {
-      this.errorMessage = 'Faltan datos de pago o el carrito está vacío.';
-      return;
+  if (!this.nombreTitular || !this.numeroTarjeta || this.cartItems.length === 0) {
+    this.errorMessage = 'Faltan datos de pago o el carrito está vacío.';
+    return;
+  }
+
+  // Verificar stock para todos los productos
+  for (const item of this.cartItems) {
+  const { product } = item;
+  const productId = product.productId;
+  console.log('🧪 Product ID:', productId);
+
+  try {
+    const stockResponse = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+
+    if (!stockResponse || !stockResponse.available) {
+      const restockResponse = await this.providerService.makeRestockOrder(productId, item.quantity, 1).toPromise();
+
+      if (!restockResponse || !restockResponse.success) {
+        this.errorMessage = `❌ No hay stock y no se pudo reabastecer el producto "${product.name}".`;
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const newCheck = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
+      if (!newCheck || !newCheck.available) {
+        this.errorMessage = `❌ El proveedor aceptó, pero aún no hay stock de "${product.name}".`;
+        return;
+      }
     }
 
-    const formattedProducts = this.cartItems.map(item => ({
-      productId: item.product._id,
-      quantity: item.quantity
-    }));
+    // ✅ Aquí restas el stock en MySQL (vía SOAP)
+    await this.stockService.decreaseStock(productId, item.quantity).toPromise();
+    console.log(`✅ Stock actualizado para "${product.name}"`);
 
-
-    const orderPayload = {
-      customerName: this.userEmail,
-      products: formattedProducts
-    };
-
-    console.log('📦 Enviando pedido al backend:', orderPayload); // Debug útil
-
-    this.http.post('http://localhost:3004/api/pedidos', orderPayload).subscribe({
-      next: (response: any) => {
-        this.successMessage = '✅ Pedido realizado correctamente.';
-        this.cartService.clearCart();
-
-        setTimeout(() => {
-          this.router.navigate(['/catalog']);
-        }, 2500);
-      },
-      error: (error) => {
-        console.error('Error al crear pedido:', error);
-        this.errorMessage = error?.error?.message || 'Error al procesar el pedido.';
-      }
-    });
+  } catch (err) {
+    console.error(`Error al verificar o reabastecer "${product.name}":`, err);
+    this.errorMessage = `Error técnico con el producto "${product.name}".`;
+    return;
   }
+}
+
+
+  // Preparar datos del pedido
+  const formattedProducts = this.cartItems.map(item => ({
+    productId: item.product._id,
+    quantity: item.quantity
+  }));
+
+  const orderPayload = {
+    customerName: this.userEmail,
+    products: formattedProducts
+  };
+
+  // Enviar pedido al backend
+  this.http.post('http://localhost:3004/api/pedidos', orderPayload).subscribe({
+    next: () => {
+      this.successMessage = '✅ Pedido realizado correctamente.';
+      this.cartService.clearCart();
+      setTimeout(() => this.router.navigate(['/catalog']), 2500);
+    },
+    error: (error) => {
+      console.error('Error al crear pedido:', error);
+      this.errorMessage = error?.error?.message || 'Error al procesar el pedido.';
+    }
+  });
+}
+
 
 }

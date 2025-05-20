@@ -23,6 +23,7 @@
       <app-product-card
         *ngFor="let product of products; trackBy: trackByProductId"
         [product]="product"
+        [realStock]="productStock[product.productId]"
         (addToCart)="onAddToCart($event)">
       </app-product-card>
     </div>

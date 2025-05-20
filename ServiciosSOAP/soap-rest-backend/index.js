@@ -13,10 +13,12 @@ const providerService = require('./services/provider.service');
 
 app.post('/api/stock/check', async (req, res) => {
   const { productId, quantity } = req.body;
+  console.log('🔍 Verificando stock:', { productId, quantity });
   try {
     const available = await stockService.verifyAvailability(productId, quantity);
     res.json({ available });
   } catch (err) {
+     console.error('❌ Error en verifyAvailability:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -40,6 +42,19 @@ app.post('/api/stock/increase', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get('/api/stock/product/:productId', async (req, res) => {
+  const productId = req.params.productId;
+  try {
+    const stock = await stockService.getStock(productId);
+    if (stock === null) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json({ stock });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // ----- ENDPOINTS DE PROVIDER -----
 
@@ -54,6 +69,7 @@ app.post('/api/provider/check-price', async (req, res) => {
 });
 
 app.post('/api/provider/restock', async (req, res) => {
+    console.log('📦 Llamada a restock con:', req.body);
   const { productId, quantity, providerId } = req.body;
   try {
     const success = await providerService.makeRestockOrder(productId, quantity, providerId);
