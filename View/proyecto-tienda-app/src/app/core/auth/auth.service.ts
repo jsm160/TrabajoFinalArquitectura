@@ -18,7 +18,11 @@ export class AuthService {
 
   private authTokenKey = 'authToken';
 
-  constructor() { }
+  constructor() {
+     window.addEventListener('beforeunload', () => {
+      this.logout(); 
+    });
+   }
 
   private hasToken(): boolean {
     return !!localStorage.getItem(this.authTokenKey);

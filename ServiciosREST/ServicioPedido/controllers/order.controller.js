@@ -44,15 +44,14 @@ exports.createOrder = async (req, res) => {
   }
 
   const newOrder = new Order({
-    userEmail: customerName,      // Mapea correctamente
-    items,                        // Guarda el array detallado
+    userEmail: customerName,      
+    items,                        
     totalPrice,
     status: needsRestock.length > 0 ? 'pendiente_restock' : 'completo'
   });
 
   await newOrder.save();
 
-  // Simulación de reabastecimiento
   if (needsRestock.length > 0) {
     setTimeout(() => {
       needsRestock.forEach(async (p) => {
@@ -112,7 +111,7 @@ exports.getOrdersByUser = async (req, res) => {
   const customerName = req.params.customerName;
 
   try {
-    const orders = await Order.find({ customerName }).sort({ createdAt: -1 });
+    const orders = await Order.find({ userEmail: customerName }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error al obtener pedidos del usuario:', error);

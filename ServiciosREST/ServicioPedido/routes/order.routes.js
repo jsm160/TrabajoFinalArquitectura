@@ -6,13 +6,13 @@ const verifyToken = require('../middleware/auth.middleware');
 // GET todos los pedidos
 router.get('/', orderController.getAllOrders);
 
-// GET pedidos por nombre de usuario (más específica)
+// GET pedidos por nombre de usuario 
 router.get('/user/:customerName', verifyToken, orderController.getOrdersByUser);
 
-// DELETE pedido (más específica que GET :id)
+// DELETE pedido 
 router.delete('/:id', verifyToken, orderController.deleteOrder);
 
-// GET un pedido por ID (debe ir después de las más específicas)
+// GET un pedido por ID 
 router.get('/:id', orderController.getOrderById);
 
 // POST crear pedido
