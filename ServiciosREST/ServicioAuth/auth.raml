@@ -1,4 +1,3 @@
-
 #%RAML 1.0
 title: Servicio de Autenticación
 version: v1
@@ -8,10 +7,10 @@ types:
   User:
     type: object
     properties:
-      username: string
+      email: string   
       password: string
     example:
-      username: "usuario123"
+      email: "usuario@example.com" 
       password: "secreta123"
 
 /auth/register:

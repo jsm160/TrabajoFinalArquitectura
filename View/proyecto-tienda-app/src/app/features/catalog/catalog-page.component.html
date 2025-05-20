@@ -7,10 +7,6 @@
   <!-- Filtros -->
   <div class="catalog-filters">
     <input type="text" placeholder="🔍 Buscar producto..." (input)="handleSearchInput($event)">
-    <select (change)="handleCategoryChange($event)">
-      <option value="all">Todas las categorías</option>
-      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-    </select>
     <input type="number" placeholder="Precio máx." (input)="handleMaxPriceInput($event)">
   </div>
 

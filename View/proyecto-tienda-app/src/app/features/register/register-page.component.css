@@ -1,24 +1,40 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+
+:host ::ng-deep body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 .register-centered-container {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #e0f2fe, #f0f9ff);
-  padding: 2rem;
+  padding-top: 1rem;
 }
 
 .register-card {
-  background: #ffffff;
   border-radius: 16px;
   padding: 2.5rem 2rem;
-  max-width: 420px;
-  width: 100%;
+  width: 450px;
+  background: linear-gradient(to bottom right, #e0f2fe, #f0f9ff);
+  
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
 
 .register-logo img {
-  max-width: 80px;
+  max-width: 160px;
   margin-bottom: 1rem;
 }
 

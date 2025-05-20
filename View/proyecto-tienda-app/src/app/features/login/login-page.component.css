@@ -1,16 +1,30 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 .login-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #dbeafe, #c7d2fe);
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding-top: 7rem;
+}
+
+:host ::ng-deep body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }
 
 .login-box {
   display: flex;
-  width: 100%;
-  max-width: 900px;
+  width:1000px;
+  height: 650px;
   background: #ffffff;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
@@ -141,6 +155,7 @@ button:disabled {
 .form-links a:hover {
   text-decoration: underline;
 }
+
 .login-image img {
   max-width: 120px;
   height: auto;
