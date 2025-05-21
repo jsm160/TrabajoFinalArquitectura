@@ -18,12 +18,18 @@ export class ProductCardComponent {
   onAddToCart(): void {
     this.addToCart.emit(this.product);
   }
-
   hasStock(): boolean {
-    return this.realStock !== undefined && this.realStock > 0;
+    const stock = this.realStock ?? this.product.stock;
+    return typeof stock === 'number' && stock > 0;
   }
 
   isLowStock(): boolean {
-    return this.realStock !== undefined && this.realStock <= 5 && this.realStock > 0;
+    const stock = this.realStock ?? this.product.stock;
+    return typeof stock === 'number' && stock <= 5 && stock > 0;
   }
+
+  get resolvedStock(): number | undefined {
+    return this.realStock ?? this.product.stock;
+  }
+
 }

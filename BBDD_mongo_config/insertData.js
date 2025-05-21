@@ -5,6 +5,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Esquemas
 const productSchema = new mongoose.Schema({
+  productId: { type: Number, required: true, unique: true },
   name: String,
   price: Number,
   description: String,
@@ -65,23 +66,16 @@ const run = async () => {
 
   // Insertar productos variados
   await Product.insertMany([
-    { name: 'TV LG 4K', price: 399.99, description: 'Smart TV 50 pulgadas', stock: 12 },
-    { name: 'Lavadora Samsung', price: 349.99, description: '7 kg A++', stock: 6 },
-    { name: 'Aire acondicionado', price: 450.00, description: 'Split inverter', stock: 4 },
-    { name: 'Microondas Cecotec', price: 99.99, description: '20L con grill', stock: 15 },
-    { name: 'Frigorífico Balay', price: 699.00, description: '2 puertas, 185cm', stock: 5 },
-    { name: 'Robot aspirador Roomba', price: 249.99, description: 'Limpieza automática', stock: 8 },
-    { name: 'Secadora Beko', price: 319.00, description: '8 kg, condensación', stock: 4 },
-    { name: 'Cafetera DeLonghi', price: 179.99, description: 'Espresso manual', stock: 10 },
-    { name: 'Placa inducción Bosch', price: 429.00, description: '3 zonas', stock: 3 },
-    { name: 'Horno Balay', price: 399.00, description: 'Pirolítico multifunción', stock: 6 }
-  ]);
-
-  // Insertar usuarios
-  await User.insertMany([
-    { email: 'pedro@demo.com', password: '123456' },
-    { email: 'maria@demo.com', password: '123456' },
-    { email: 'laura@demo.com', password: '123456' }
+    { productId: 10, name: 'TV LG 4K', price: 399.99, description: 'Smart TV 50 pulgadas', stock: 12 },
+    { productId: 1, name: 'Lavadora Samsung', price: 349.99, description: '7 kg A++', stock: 6 },
+    { productId: 2, name: 'Aire acondicionado', price: 450.00, description: 'Split inverter', stock: 4 },
+    { productId: 3, name: 'Microondas Cecotec', price: 99.99, description: '20L con grill', stock: 15 },
+    { productId: 4, name: 'Frigorífico Balay', price: 699.00, description: '2 puertas, 185cm', stock: 5 },
+    { productId: 5, name: 'Robot aspirador Roomba', price: 249.99, description: 'Limpieza automática', stock: 8 },
+    { productId: 6, name: 'Secadora Beko', price: 319.00, description: '8 kg, condensación', stock: 4 },
+    { productId: 7, name: 'Cafetera DeLonghi', price: 179.99, description: 'Espresso manual', stock: 10 },
+    { productId: 8, name: 'Placa inducción Bosch', price: 429.00, description: '3 zonas', stock: 3 },
+    { productId: 9, name: 'Horno Balay', price: 399.00, description: 'Pirolítico multifunción', stock: 6 }
   ]);
 
   // Insertar cuentas bancarias

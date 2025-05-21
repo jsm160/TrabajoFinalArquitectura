@@ -7,7 +7,8 @@ import { ProductCardComponent } from './product-card/product-card.component';
 import { CartService } from '../cart/cart.service';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
-import { StockApiService } from '../../services-integration/soap/services/stock-api.service'; // ✅ Asegúrate de importar
+import { StockApiService } from '../../services-integration/soap/services/stock-api.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-catalog-page',
@@ -25,7 +26,7 @@ export class CatalogPageComponent implements OnInit {
   filteredProducts$!: Observable<Product[]>;
   isLoading = true;
 
-  productStock: Record<number, number> = {}; // ✅ Nuevo: stock real por productId
+  productStock: Record<number, number> = {};
 
   search$ = new BehaviorSubject<string>('');
   category$ = new BehaviorSubject<string>('all');
@@ -35,7 +36,7 @@ export class CatalogPageComponent implements OnInit {
 
   private catalogService = inject(CatalogService);
   private cartService = inject(CartService);
-  private stockService = inject(StockApiService); // ✅ Nuevo servicio
+  private stockService = inject(StockApiService);
 
   ngOnInit(): void {
     this.loadProducts();
@@ -47,21 +48,21 @@ export class CatalogPageComponent implements OnInit {
       map(products => {
         this.categories = [...new Set(products.map(p => p.category).filter((c): c is string => typeof c === 'string'))];
 
-        // ✅ Cargar stock real desde backend para cada producto
-        for (const product of products) {
-          if (product.productId !== undefined) {
-            this.stockService.getStock(product.productId).subscribe({
-              next: (res) => {
-                console.log(`📦 Stock recibido para ID ${product.productId}:`, res.stock);
-                this.productStock[product.productId] = res.stock;
-              },
-              error: (err) => {
-                console.warn(`❌ Error al obtener stock para ID ${product.productId}`, err);
-                this.productStock[product.productId] = 0;
-              }
-            });
+        const stockCalls = products
+          .filter(p => p.productId !== undefined)
+          .map(p =>
+            this.stockService.getStock(p.productId).pipe(
+              take(1),
+              map(res => ({ productId: p.productId, stock: res.stock })),
+            )
+          );
 
-          }
+        if (stockCalls.length > 0) {
+          forkJoin(stockCalls).subscribe(stockResults => {
+            for (const item of stockResults) {
+              this.productStock[item.productId] = item.stock;
+            }
+          });
         }
 
         return products;
@@ -85,6 +86,7 @@ export class CatalogPageComponent implements OnInit {
 
     this.allProducts$.subscribe(() => (this.isLoading = false));
   }
+
 
   onAddToCart(product: Product): void {
     this.cartService.addProduct(product);

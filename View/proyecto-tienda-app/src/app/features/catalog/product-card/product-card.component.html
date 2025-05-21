@@ -11,7 +11,8 @@
     </h3>
 
     <p class="product-desc">
-      {{ product.description || 'Sin descripción disponible' | slice:0:80 }}{{ (product.description.length || 0) > 80 ? '...' : '' }}
+      {{ product.description || 'Sin descripción disponible' | slice:0:80 }}{{ (product.description.length || 0) > 80 ?
+      '...' : '' }}
     </p>
 
     <div class="product-meta">
@@ -22,12 +23,13 @@
         <i class="fas" [ngClass]="hasStock() ? 'fa-cart-plus' : 'fa-ban'"></i>
         {{ hasStock() ? 'Añadir' : 'Agotado' }}
       </button>
-      
+
 
     </div>
 
     <p *ngIf="isLowStock()" class="stock-warning">
-      <i class="fas fa-exclamation-circle"></i> ¡Quedan {{ realStock }}!
+      <i class="fas fa-exclamation-circle"></i> ¡Quedan {{ resolvedStock }}!
     </p>
+
   </div>
 </div>
