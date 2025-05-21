@@ -97,7 +97,7 @@ export class CheckoutPageComponent implements OnInit {
         const stockResponse = await this.stockService.verifyAvailability(productId, item.quantity).toPromise();
       console.log('stockResponse:', stockResponse);
         if (!stockResponse || !stockResponse.available) {
-          const restockResponse = await this.providerService.makeRestockOrder(productId, item.quantity, 2).toPromise();
+          const restockResponse = await this.providerService.makeRestockOrder(productId, 10, 2).toPromise();
         
 
           if (!restockResponse || !restockResponse.success) {
